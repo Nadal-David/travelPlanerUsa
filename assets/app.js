@@ -243,7 +243,20 @@ const renderDays = () => {
 };
 
 const mountMaps = () => {
-  if (!window.L) return;
+  if (!window.L) {
+    tripDays.forEach((day, index) => {
+      if (!day.map) return;
+      const element = document.querySelector(`#day-map-${index}`);
+      if (element) {
+        element.innerHTML = `
+          <div class="flex h-full items-center justify-center px-4 text-center text-sm text-slate-300">
+            La carte n'a pas pu se charger. Ouvre le trajet dans Google Maps ci-contre.
+          </div>
+        `;
+      }
+    });
+    return;
+  }
 
   tripDays.forEach((day, index) => {
     if (!day.map) return;
@@ -275,6 +288,10 @@ const mountMaps = () => {
       }).addTo(map);
       map.fitBounds(bounds, { padding: [24, 24] });
     }
+
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 0);
   });
 };
 
@@ -673,7 +690,6 @@ const bindUi = () => {
 renderNav();
 renderDaySelect();
 renderDays();
-mountMaps();
 renderEsta();
 renderEsim();
 renderParks();
@@ -687,3 +703,7 @@ if (metaFlights) metaFlights.textContent = String(tripDays.filter((day) => day.f
 
 setActiveTab(getSelectedTab());
 setActiveDay(0, { scroll: false });
+
+window.addEventListener('load', () => {
+  mountMaps();
+});
