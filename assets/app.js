@@ -552,7 +552,7 @@ const renderNav = () => {
 
   navTabs.innerHTML = tabs.map((tab) => `
     <button
-      class="rounded-full border px-4 py-2 text-sm font-semibold transition"
+      class="flex w-full items-center justify-center rounded-2xl border border-slate-700 bg-slate-950/40 px-3 py-2 text-center text-[12px] font-semibold leading-tight text-slate-300 transition hover:border-sky-400/35 hover:text-white sm:w-auto sm:rounded-full sm:px-4 sm:py-2 sm:text-sm"
       data-tab="${tab.id}"
       type="button"
     >
