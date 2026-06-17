@@ -394,9 +394,6 @@ const renderDaySelect = () => {
       data-day-index="${index}"
       aria-selected="false"
     >
-      <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-        ${index + 1}
-      </span>
       <span class="flex-1">
         <span class="block font-semibold text-inherit">Jour ${index + 1}</span>
         <span class="block text-xs text-slate-400">${escapeHtml(day.date)}</span>
