@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Travel Planner USA">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#0b1730"/>
+      <stop offset="100%" stop-color="#081122"/>
+    </linearGradient>
+    <linearGradient id="route" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <path d="M14 40c10-10 18-12 25-10 5 1 9 6 11 12" fill="none" stroke="url(#route)" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="18" cy="38" r="4" fill="#e2e8f0"/>
+  <circle cx="33" cy="30" r="4" fill="#e2e8f0"/>
+  <path d="M43 18c3 0 6 3 6 6 0 5-6 11-6 11s-6-6-6-11c0-3 3-6 6-6Z" fill="#38bdf8"/>
+  <circle cx="43" cy="24" r="2.2" fill="#0b1730"/>
+</svg>

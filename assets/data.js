@@ -29,12 +29,30 @@ const tripDays = [
       place: "Agence Dollar à l'aéroport"
     },
     hotel: 'À définir',
+    itinerary: [
+      { time: 'Après l’atterrissage', label: 'Récupérer la voiture à l’agence Dollar à LAX' },
+      { time: 'Début d’après-midi', label: 'Venice Canals pour la première balade calme' },
+      { time: 'Milieu d’après-midi', label: 'Venice Beach et Muscle Beach' },
+      { time: 'Fin de journée', label: 'Santa Monica Beach puis Santa Monica Pier au coucher du soleil' }
+    ],
+    map: {
+      title: 'Jour 1 - Los Angeles',
+      center: { lat: 34.0, lng: -118.46 },
+      zoom: 12,
+      stops: [
+        { label: 'LAX / Dollar', lat: 33.9416, lng: -118.4085 },
+        { label: 'Venice Canals', lat: 33.9856, lng: -118.4722 },
+        { label: 'Venice Beach', lat: 33.9850, lng: -118.4695 },
+        { label: 'Santa Monica Pier', lat: 34.0094, lng: -118.4973 }
+      ],
+      directionsUrl: 'https://www.google.com/maps/dir/?api=1&origin=Los+Angeles+International+Airport&destination=Santa+Monica+Pier&travelmode=driving&waypoints=Venice+Canals%7CVenice+Beach%7CMuscle+Beach'
+    },
     highlights: [
-      'Santa Monica Beach',
-      'Santa Monica Pier',
-      'Muscle Beach',
+      'Venice Canals',
       'Venice Beach',
-      'Venice Canals'
+      'Muscle Beach',
+      'Santa Monica Beach',
+      'Santa Monica Pier'
     ],
     links: [
       {
@@ -237,6 +255,47 @@ const parkPassInfo = {
   ]
 };
 
+const esimInfo = {
+  title: 'eSIM USA',
+  name: 'Ubigi - le meilleur compromis pour 3 semaines',
+  mainLink: 'https://www.ubigi.com/',
+  buyLink: 'https://www.ubigi.com/',
+  bullets: [
+    'Ubigi est le choix le plus simple si vous voulez un bon équilibre entre prix, fiabilite et couverture sur 3 semaines.',
+    'Ubigi affiche des plans USA a partir de 2,90 $ pour 500 Mo pendant 1 jour  (25 Go / 30 jours : 32 $).',
+    'Pour un vrai plan 30 Go, la reference simple a retenir est Saily Ultra a 59,99 $ / mois.',
+    "Si vous consommez peu ou moyen: un petit plan 10 Go / 30 jours suffit souvent avec Google Maps, messages et reseaux.",
+    "Si vous streamez beaucoup ou voulez ne pas compter: Holafly reste l'option la plus confortable avec data illimitee.",
+    'Nomad peut etre interessant si vous cherchez le budget et Airalo reste une valeur sure pour la simplicite.'
+  ],
+  tableRows: [
+    { label: 'Saily Ultra', cost: '30 Go / mois - 59,99 $' },
+    { label: 'Ubigi USA', cost: 'A partir de 2,90 $ (500 Mo / 1 jour) (25 Go / 30 jours : 32 $)' },
+    { label: 'Airalo', cost: '20 Go / 30 jours - 42 $' },
+    { label: 'Nomad', cost: 'North America - tarif variable' },
+    { label: 'Recommandation pour 3 semaines', cost: 'Ubigi' , strong: true}
+  ],
+  notes: [
+    'Prendre une eSIM data-only suffit pour le roadtrip.',
+    'Verifier que le telephone est bien compatible eSIM avant achat.',
+    'Installer avant le depart, activer une fois aux USA.'
+  ],
+  sources: [
+    {
+      label: 'Best eSIMs for USA in 2025 - TechRadar',
+      url: 'https://www.techradar.com/pro/best-esims-for-usa-in-year'
+    },
+    {
+      label: 'Ubigi - plans et couverture USA',
+      url: 'https://www.ubigi.com/en/country/esim-united-states'
+    },
+    {
+      label: 'Airalo - eSIM USA',
+      url: 'https://www.airalo.com/united-states-esim'
+    }
+  ]
+};
+
 const nationalParks = [
   { name: 'Grand Canyon', state: 'AZ', note: 'South Rim, couchers de soleil et points de vue majeurs' },
   { name: 'Monument Valley', state: 'UT', note: 'Route panoramique et paysages iconiques' },
@@ -258,7 +317,8 @@ const travelTodo = {
     { id: 'd-permit', label: 'Permis de conduire', checked: false },
     { id: 'd-intl', label: 'Permis de conduire international', checked: false },
     { id: 'd-identity', label: "Carte d'identité", checked: false },
-    { id: 'd-esta', label: 'ESTA', checked: false }
+    { id: 'd-esta', label: 'ESTA', checked: false },
+    { id: 'd-esim', label: 'Acheter eSIM', checked: false }
   ],
   Emeline: [
     { id: 'e-passport', label: 'Passeport', checked: false },
@@ -266,7 +326,8 @@ const travelTodo = {
     { id: 'e-permit', label: 'Permis de conduire', checked: false },
     { id: 'e-intl', label: 'Permis de conduire international', checked: false },
     { id: 'e-identity', label: "Carte d'identité", checked: false },
-    { id: 'e-esta', label: 'ESTA', checked: false }
+    { id: 'e-esta', label: 'ESTA', checked: false },
+    { id: 'e-esim', label: 'Acheter eSIM', checked: false }
   ],
   'David et Emeline': [
     { id: 'both-visa', label: 'Carte Visa première', checked: false },

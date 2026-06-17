@@ -6,7 +6,11 @@
     <meta name="theme-color" content="#0b1730" />
     <title>Travel Planner USA</title>
     <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+    <link rel="mask-icon" href="./assets/favicon.svg" color="#38bdf8" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="./assets/styles.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
     <script src="./assets/data.js" defer></script>
     <script src="./assets/app.js" defer></script>
   </head>
@@ -61,6 +65,9 @@
       </section>
 
       <section id="esta-view" class="mt-4 hidden"></section>
+      <section id="esim-view" class="mt-4 hidden">
+        <div id="esim-container" class="grid gap-3"></div>
+      </section>
       <section id="parks-view" class="mt-4 hidden">
         <div id="parks-container" class="grid gap-3"></div>
       </section>

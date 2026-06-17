@@ -3,6 +3,7 @@ const navTabs = document.querySelector('#nav-tabs');
 const daysCount = document.querySelector('#days-count');
 const appView = document.querySelector('#app-view');
 const estaView = document.querySelector('#esta-view');
+const esimView = document.querySelector('#esim-view');
 const parksView = document.querySelector('#parks-view');
 const todoView = document.querySelector('#todo-view');
 const dayPickerButton = document.querySelector('#day-picker-button');
@@ -10,6 +11,7 @@ const dayPickerLabel = document.querySelector('#day-picker-label');
 const dayPickerMenu = document.querySelector('#day-picker-menu');
 const dayPickerWrap = document.querySelector('#day-picker-wrap');
 const travelerContainer = document.querySelector('#traveler-container');
+const esimContainer = document.querySelector('#esim-container');
 const parksContainer = document.querySelector('#parks-container');
 const prepContainer = document.querySelector('#prep-container');
 const davidContainer = document.querySelector('#david-container');
@@ -89,11 +91,63 @@ const renderLinks = (links = []) => links.length ? `
 
 const renderHighlights = (highlights = []) => highlights.length ? `
   <div class="mt-4">
-    <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">À faire / Voir</p>
+    <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">Activités</p>
     <div class="mt-2 flex flex-wrap gap-2">
       ${highlights.map((item) => `
         <span class="label-chip border border-slate-700 bg-slate-900 text-sky-100">${escapeHtml(item)}</span>
       `).join('')}
+    </div>
+  </div>
+` : '';
+
+const renderItinerary = (itinerary = []) => itinerary.length ? `
+  <div class="mt-4 rounded-xl border border-slate-700 bg-slate-900 p-4">
+    <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-sky-300">Activités</p>
+    <ol class="mt-3 space-y-2">
+      ${itinerary.map((step, stepIndex) => `
+        <li class="flex gap-3 rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2.5">
+          <span class="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full border border-sky-400/30 bg-sky-500/10 px-2 text-[11px] font-bold text-sky-200">
+            ${stepIndex + 1}
+          </span>
+          <div class="min-w-0">
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-slate-400">${escapeHtml(step.time)}</p>
+            <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(step.label)}</p>
+          </div>
+        </li>
+      `).join('')}
+    </ol>
+  </div>
+` : '';
+
+const renderMapPanel = (map, index) => map ? `
+  <div class="mt-4 overflow-hidden rounded-xl border border-sky-700/30 bg-slate-900">
+    <div class="border-b border-sky-700/30 px-4 py-3">
+      <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-sky-300">Carte du jour</p>
+      <h3 class="mt-1 text-lg font-bold text-white">${escapeHtml(map.title)}</h3>
+    </div>
+    <div class="grid gap-0 lg:grid-cols-[1.3fr_0.7fr]">
+      <div id="day-map-${index}" class="h-72 bg-slate-950 lg:h-full"></div>
+      <div class="border-t border-slate-700 bg-slate-900 p-4 lg:border-l lg:border-t-0">
+        <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">Points clés</p>
+        <ul class="mt-3 space-y-2">
+          ${map.stops.map((stop, stopIndex) => `
+            <li class="flex items-start gap-3 rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2">
+              <span class="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full border border-sky-400/30 bg-sky-500/10 px-2 text-[11px] font-bold text-sky-200">
+                ${stopIndex + 1}
+              </span>
+              <span class="text-sm font-semibold text-slate-100">${escapeHtml(stop.label)}</span>
+            </li>
+          `).join('')}
+        </ul>
+        <a
+          class="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-sky-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-sky-400"
+          href="${escapeHtml(map.directionsUrl)}"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Ouvrir dans Google Maps
+        </a>
+      </div>
     </div>
   </div>
 ` : '';
@@ -178,12 +232,50 @@ const renderDayCard = (day, index) => `
     ${renderHotel(day.hotel)}
     ${renderVisit(day.visit)}
     ${renderHighlights(day.highlights)}
+    ${renderItinerary(day.itinerary)}
+    ${renderMapPanel(day.map, index)}
     ${renderLinks(day.links)}
   </article>
 `;
 
 const renderDays = () => {
   daysContainer.innerHTML = tripDays.map(renderDayCard).join('');
+};
+
+const mountMaps = () => {
+  if (!window.L) return;
+
+  tripDays.forEach((day, index) => {
+    if (!day.map) return;
+    const element = document.querySelector(`#day-map-${index}`);
+    if (!element || element._leaflet_id) return;
+
+    const map = window.L.map(element, {
+      zoomControl: true,
+      scrollWheelZoom: false
+    }).setView([day.map.center.lat, day.map.center.lng], day.map.zoom || 12);
+
+    window.L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Tiles &copy; Esri'
+    }).addTo(map);
+
+    const bounds = [];
+    day.map.stops.forEach((stop) => {
+      const coords = [stop.lat, stop.lng];
+      bounds.push(coords);
+      window.L.marker(coords).addTo(map).bindPopup(stop.label);
+    });
+
+    if (bounds.length > 1) {
+      window.L.polyline(bounds, {
+        color: '#38bdf8',
+        weight: 4,
+        opacity: 0.9
+      }).addTo(map);
+      map.fitBounds(bounds, { padding: [24, 24] });
+    }
+  });
 };
 
 const renderEsta = () => {
@@ -292,6 +384,90 @@ const renderParks = () => {
   `;
 };
 
+const renderEsim = () => {
+  if (!esimContainer) return;
+  esimContainer.innerHTML = `
+    <section class="day-card rounded-xl p-4 sm:p-5">
+      <div class="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.24em] text-sky-300">${escapeHtml(esimInfo.title)}</p>
+          <h2 class="mt-1 text-3xl font-black tracking-tight text-white">${escapeHtml(esimInfo.name)}</h2>
+          <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+            Pour 3 semaines aux Etats-Unis, on cherche surtout un bon compromis entre couverture, simplicite et prix. Ubigi sort comme le choix le plus equilibré.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-3">
+            <a
+              class="inline-flex rounded-xl border border-slate-700 bg-slate-900 px-4 py-2.5 text-sm font-bold text-slate-100 transition hover:border-sky-400/40 hover:text-white"
+              href="${escapeHtml(esimInfo.mainLink)}"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Site Ubigi
+            </a>
+          </div>
+        </div>
+        <div class="rounded-xl border border-sky-700/30 bg-slate-900 p-4">
+          <p class="text-xs font-bold uppercase tracking-[0.22em] text-sky-300">Pourquoi ce choix</p>
+          <ul class="mt-3 space-y-2 text-sm text-slate-200">
+            ${esimInfo.bullets.map((item) => `<li class="rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2">${escapeHtml(item)}</li>`).join('')}
+          </ul>
+        </div>
+      </div>
+
+      <div class="mx-auto mt-8 max-w-4xl overflow-hidden border border-slate-600 bg-slate-800">
+        <div class="border-b border-slate-700 bg-slate-900 px-4 py-3">
+          <p class="text-xs font-bold uppercase tracking-[0.22em] text-sky-300">Comparatif rapide</p>
+          <p class="mt-1 text-sm text-slate-300">Pour un roadtrip de 3 semaines avec GPS, messages et recherches.</p>
+        </div>
+        <table class="w-full border-collapse text-sm text-slate-100">
+          <thead>
+            <tr class="bg-slate-700 text-slate-100">
+              <th class="border-b border-slate-600 px-4 py-3 text-left font-semibold">Option</th>
+              <th class="border-b border-slate-600 px-4 py-3 text-left font-semibold">Lecture rapide</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${esimInfo.tableRows.map((row) => `
+              <tr class="${row.strong ? 'bg-sky-950/60 text-white font-semibold' : 'bg-slate-900'}">
+                <td class="border-t border-slate-700 px-4 py-2.5 ${row.strong ? 'text-white' : 'text-slate-100'}">${escapeHtml(row.label)}</td>
+                <td class="border-t border-slate-700 px-4 py-2.5 ${row.strong ? 'text-white' : 'text-slate-100'}">${escapeHtml(row.cost)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mx-auto mt-6 max-w-4xl text-sm text-slate-200">
+        <div class="mt-1">
+          <p class="font-semibold text-white">A garder en tete :</p>
+          <ul class="mt-2 space-y-2">
+            ${esimInfo.notes.map((item) => `
+              <li class="flex gap-3">
+                <span class="mt-2 size-1.5 shrink-0 rounded-full bg-slate-300"></span>
+                <span>${escapeHtml(item)}</span>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+
+        <div class="mt-6">
+          <p class="font-semibold text-white">Sources :</p>
+          <ul class="mt-2 space-y-2">
+            ${esimInfo.sources.map((source) => `
+              <li class="flex gap-3">
+                <span class="mt-2 size-1.5 shrink-0 rounded-full bg-slate-300"></span>
+                <a class="text-sky-300 underline decoration-sky-400/40 underline-offset-4" href="${escapeHtml(source.url)}" target="_blank" rel="noreferrer">
+                  ${escapeHtml(source.label)}
+                </a>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      </div>
+    </section>
+  `;
+};
+
 const renderChecklistItem = (item) => `
   <label class="flex items-start gap-2 text-[15px] leading-6 text-slate-100">
     <input class="mt-1 size-4 shrink-0 accent-sky-400" type="checkbox" data-check-id="${escapeHtml(item.id)}" ${isChecked(item.id, item.checked) ? 'checked' : ''}>
@@ -369,6 +545,7 @@ const renderNav = () => {
   const tabs = [
     { id: 'days', label: 'Jours' },
     { id: 'esta', label: 'ESTA' },
+    { id: 'esim', label: 'eSIM' },
     { id: 'parks', label: 'Parcs nationaux' },
     { id: 'todo', label: 'To-do' }
   ];
@@ -406,6 +583,7 @@ const setActiveTab = (tab) => {
   localStorage.setItem(selectedTabKey, tab);
   if (appView) appView.classList.toggle('hidden', tab !== 'days');
   if (estaView) estaView.classList.toggle('hidden', tab !== 'esta');
+  if (esimView) esimView.classList.toggle('hidden', tab !== 'esim');
   if (parksView) parksView.classList.toggle('hidden', tab !== 'parks');
   if (todoView) todoView.classList.toggle('hidden', tab !== 'todo');
   if (dayPickerWrap) dayPickerWrap.classList.toggle('hidden', tab !== 'days');
@@ -495,7 +673,9 @@ const bindUi = () => {
 renderNav();
 renderDaySelect();
 renderDays();
+mountMaps();
 renderEsta();
+renderEsim();
 renderParks();
 renderTraveler();
 bindChecklistHandlers();
