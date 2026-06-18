@@ -2,6 +2,7 @@ const daysContainer = document.querySelector('#days');
 const navTabs = document.querySelector('#nav-tabs');
 const daysCount = document.querySelector('#days-count');
 const appView = document.querySelector('#app-view');
+const overviewView = document.querySelector('#overview-view');
 const estaView = document.querySelector('#esta-view');
 const esimView = document.querySelector('#esim-view');
 const parksView = document.querySelector('#parks-view');
@@ -22,12 +23,16 @@ const emelineContainer = document.querySelector('#emeline-container');
 const bothContainer = document.querySelector('#both-container');
 const metaCities = document.querySelector('#meta-cities');
 const metaFlights = document.querySelector('#meta-flights');
+const overviewContainer = document.querySelector('#overview-container');
+let navMoreButton = null;
+let navMoreMenu = null;
 
 const storageKey = 'travel-planner-usa-checklist-v1';
 const selectedTabKey = 'travel-planner-usa-tab-v1';
 const storedChecks = JSON.parse(localStorage.getItem(storageKey) || '{}');
 let activeDayIndex = 0;
 const dayMaps = new Map();
+let overviewMapState = null;
 
 const escapeHtml = (value) => String(value)
   .replaceAll('&', '&amp;')
@@ -158,6 +163,50 @@ const renderMapPanel = (map, index) => map ? `
     </div>
   </div>
 ` : '';
+
+const renderOverview = () => {
+  if (!overviewContainer) return;
+  overviewContainer.innerHTML = `
+    <section class="day-card rounded-xl p-4 sm:p-5">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.24em] text-sky-300">${escapeHtml(overviewTrip.title)}</p>
+          <h2 class="mt-1 text-3xl font-black tracking-tight text-white">Carte globale du roadtrip</h2>
+          <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-300">${escapeHtml(overviewTrip.subtitle)}</p>
+        </div>
+      </div>
+      <div class="mt-4 overflow-hidden rounded-xl border border-sky-700/30 bg-slate-900">
+        <div class="grid gap-0 lg:grid-cols-[1.35fr_0.65fr]">
+          <div id="overview-map" class="h-[28rem] bg-slate-950 lg:h-full"></div>
+          <div class="border-t border-slate-700 bg-slate-900 p-4 lg:border-l lg:border-t-0">
+            <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">Grandes étapes</p>
+            <ol class="mt-3 space-y-2">
+              ${overviewTrip.stops.map((stop, stopIndex) => `
+                <li class="flex items-start gap-3 rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2">
+                  <span class="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full border border-sky-400/30 bg-sky-500/10 px-2 text-[11px] font-bold text-sky-200">
+                    ${stopIndex + 1}
+                  </span>
+                  <span class="min-w-0">
+                    <span class="block text-sm font-semibold text-slate-100">${escapeHtml(stop.label)}</span>
+                    <span class="block text-xs text-slate-400">${escapeHtml(stop.days)}</span>
+                  </span>
+                </li>
+              `).join('')}
+            </ol>
+            <a
+              class="mt-4 w-full ${mapActionButtonClass}"
+              href="${escapeHtml(overviewTrip.directionsUrl)}"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Ouvrir l’itinéraire global
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+};
 
 const renderVisit = (visit) => visit ? `
   <div class="mt-4 overflow-hidden rounded-xl border border-emerald-800/40 bg-slate-900">
@@ -403,6 +452,73 @@ const mountMaps = () => {
       map.invalidateSize();
     }, 0);
   });
+};
+
+const refreshOverviewMap = () => {
+  if (!window.L || !overviewMapState?.map) return;
+  overviewMapState.map.invalidateSize();
+  if (overviewMapState.bounds && overviewMapState.bounds.length > 1) {
+    overviewMapState.map.fitBounds(overviewMapState.bounds, { padding: [24, 24] });
+  }
+};
+
+const mountOverviewMap = () => {
+  if (!overviewContainer) return;
+  const element = document.querySelector('#overview-map');
+  if (!element) return;
+
+  if (!window.L) {
+    element.innerHTML = `
+      <div class="flex h-full items-center justify-center px-4 text-center text-sm text-slate-300">
+        La carte globale n'a pas pu se charger. Ouvre les étapes dans Google Maps ci-contre.
+      </div>
+    `;
+    return;
+  }
+
+  if (overviewMapState?.map || element._leaflet_id) {
+    refreshOverviewMap();
+    return;
+  }
+
+  const bounds = [];
+  const map = window.L.map(element, {
+    zoomControl: true,
+    scrollWheelZoom: false
+  }).setView([36.5, -115.5], 4);
+
+  overviewMapState = { map, bounds };
+
+  window.L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19,
+    attribution: 'Tiles &copy; Esri'
+  }).addTo(map);
+
+  overviewTrip.stops.forEach((stop, stopIndex) => {
+    const coords = [stop.lat, stop.lng];
+    bounds.push(coords);
+    overviewMapState.bounds = bounds;
+    const markerIcon = window.L.divIcon({
+      className: 'stop-marker',
+      html: `<div class="stop-marker__inner">${stopIndex + 1}</div>`,
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
+    });
+    window.L.marker(coords, { icon: markerIcon }).addTo(map).bindPopup(`${stopIndex + 1}. ${stop.label}`);
+  });
+
+  if (bounds.length > 1) {
+    window.L.polyline(bounds, {
+      color: '#38bdf8',
+      weight: 4,
+      opacity: 0.9
+    }).addTo(map);
+    map.fitBounds(bounds, { padding: [24, 24] });
+  }
+
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 0);
 };
 
 const renderEsta = () => {
@@ -683,23 +799,56 @@ const renderTodo = () => {
 const renderTraveler = () => renderTodo();
 
 const renderNav = () => {
-  const tabs = [
-    { id: 'days', label: 'Jours' },
+  const otherTabs = [
+    { id: 'overview', label: 'Itinéraire global' },
     { id: 'esta', label: 'ESTA' },
     { id: 'esim', label: 'eSIM' },
     { id: 'parks', label: 'Parcs nationaux' },
     { id: 'todo', label: 'To-do' }
   ];
 
-  navTabs.innerHTML = tabs.map((tab) => `
+  navTabs.innerHTML = `
     <button
       class="flex shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-950/40 px-3 py-1.5 text-center text-[11px] font-semibold leading-tight text-slate-300 transition hover:border-sky-400/35 hover:text-white sm:px-4 sm:text-sm"
-      data-tab="${tab.id}"
+      data-tab="days"
       type="button"
     >
-      ${escapeHtml(tab.label)}
+      Jours
     </button>
-  `).join('');
+    <div class="relative ml-auto">
+      <button
+        id="nav-more-button"
+        class="inline-flex min-w-[7.25rem] items-center justify-between gap-2 rounded-full border border-slate-700 bg-slate-950/40 px-4 py-2 text-[11px] font-semibold text-slate-300 transition hover:border-sky-400/35 hover:text-white focus:border-sky-400/60 focus:outline-none focus:ring-2 focus:ring-sky-400/20 sm:min-w-[8rem]"
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded="false"
+      >
+        <span class="truncate">Pages</span>
+        <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="h-4 w-4 shrink-0 text-slate-400">
+          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.27a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
+        </svg>
+      </button>
+      <div
+        id="nav-more-menu"
+        class="absolute right-0 top-full z-30 mt-2 hidden min-w-56 overflow-hidden rounded-2xl border border-slate-700/80 bg-slate-950 shadow-2xl shadow-slate-950/50"
+        role="menu"
+      >
+        ${otherTabs.map((tab) => `
+          <button
+            class="flex w-full items-center px-4 py-3 text-left text-sm text-slate-200 transition duration-150 hover:bg-slate-800 hover:text-white focus-visible:bg-slate-800 focus-visible:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-slate-500/35"
+            data-tab="${tab.id}"
+            type="button"
+            role="menuitem"
+          >
+            ${escapeHtml(tab.label)}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  navMoreButton = document.querySelector('#nav-more-button');
+  navMoreMenu = document.querySelector('#nav-more-menu');
 };
 
 const renderDaySelect = () => {
@@ -723,6 +872,7 @@ const renderDaySelect = () => {
 const setActiveTab = (tab) => {
   localStorage.setItem(selectedTabKey, tab);
   if (appView) appView.classList.toggle('hidden', tab !== 'days');
+  if (overviewView) overviewView.classList.toggle('hidden', tab !== 'overview');
   if (estaView) estaView.classList.toggle('hidden', tab !== 'esta');
   if (esimView) esimView.classList.toggle('hidden', tab !== 'esim');
   if (parksView) parksView.classList.toggle('hidden', tab !== 'parks');
@@ -732,21 +882,51 @@ const setActiveTab = (tab) => {
     dayPickerMenu.classList.add('hidden');
     dayPickerButton.setAttribute('aria-expanded', 'false');
   }
+  if (navMoreMenu && navMoreButton) {
+    navMoreMenu.classList.add('hidden');
+    navMoreButton.setAttribute('aria-expanded', 'false');
+  }
 
   document.querySelectorAll('[data-tab]').forEach((button) => {
     const active = button.dataset.tab === tab;
-    button.classList.toggle('bg-sky-500', active);
-    button.classList.toggle('text-white', active);
-    button.classList.toggle('border-sky-400/60', active);
-    button.classList.toggle('bg-slate-900', !active);
-    button.classList.toggle('text-slate-300', !active);
-    button.classList.toggle('border-slate-700', !active);
+    const inMenu = Boolean(button.closest('#nav-more-menu'));
+
+    if (inMenu) {
+      button.classList.toggle('bg-slate-800', active);
+      button.classList.toggle('text-white', active);
+      button.classList.toggle('ring-1', active);
+      button.classList.toggle('ring-slate-500/35', active);
+      button.classList.toggle('bg-transparent', !active);
+      button.classList.toggle('text-slate-200', !active);
+      button.classList.toggle('ring-0', !active);
+    } else {
+      button.classList.toggle('bg-sky-500', active);
+      button.classList.toggle('text-white', active);
+      button.classList.toggle('border-sky-400/60', active);
+      button.classList.toggle('bg-slate-900', !active);
+      button.classList.toggle('text-slate-300', !active);
+      button.classList.toggle('border-slate-700', !active);
+    }
   });
 
-  if (tab === 'days') {
+  if (navMoreButton) {
+    const active = tab !== 'days';
+    navMoreButton.classList.toggle('bg-slate-900', active);
+    navMoreButton.classList.toggle('text-white', active);
+    navMoreButton.classList.toggle('border-sky-400/35', active);
+    navMoreButton.classList.toggle('bg-slate-950/40', !active);
+    navMoreButton.classList.toggle('text-slate-300', !active);
+    navMoreButton.classList.toggle('border-slate-700', !active);
+  }
+
+  if (tab === 'days' || tab === 'overview') {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        refreshMaps();
+        if (tab === 'days') refreshMaps();
+        if (tab === 'overview') {
+          mountOverviewMap();
+          refreshOverviewMap();
+        }
       });
     });
   }
@@ -768,11 +948,11 @@ const setActiveDay = (index, options = {}) => {
   if (dayPickerMenu) {
     dayPickerMenu.querySelectorAll('[data-day-index]').forEach((button) => {
       const active = Number(button.dataset.dayIndex) === activeDayIndex;
-      button.classList.toggle('bg-sky-500/10', active);
+      button.classList.toggle('bg-slate-800', active);
       button.classList.toggle('text-white', active);
-      button.classList.toggle('border-sky-400/40', active);
+      button.classList.toggle('border-slate-500/35', active);
       button.classList.toggle('ring-1', active);
-      button.classList.toggle('ring-sky-400/20', active);
+      button.classList.toggle('ring-slate-500/25', active);
       button.setAttribute('aria-selected', active ? 'true' : 'false');
     });
   }
@@ -803,6 +983,22 @@ const bindUi = () => {
     setActiveTab(button.dataset.tab);
   });
 
+  if (navMoreButton && navMoreMenu) {
+    navMoreButton.addEventListener('click', () => {
+      const open = !navMoreMenu.classList.contains('hidden');
+      navMoreMenu.classList.toggle('hidden', open);
+      navMoreButton.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+
+    navMoreMenu.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-tab]');
+      if (!button) return;
+      setActiveTab(button.dataset.tab);
+      navMoreMenu.classList.add('hidden');
+      navMoreButton.setAttribute('aria-expanded', 'false');
+    });
+  }
+
   if (dayPrev) {
     dayPrev.addEventListener('click', () => {
       setActiveDay(activeDayIndex - 1);
@@ -832,6 +1028,10 @@ const bindUi = () => {
   }
 
   document.addEventListener('click', (event) => {
+    if (navMoreButton && navMoreMenu && !event.target.closest('#nav-more-button') && !event.target.closest('#nav-more-menu')) {
+      navMoreMenu.classList.add('hidden');
+      navMoreButton.setAttribute('aria-expanded', 'false');
+    }
     if (dayPickerButton && dayPickerMenu && !event.target.closest('#day-picker-button') && !event.target.closest('#day-picker-menu')) {
       dayPickerMenu.classList.add('hidden');
       dayPickerButton.setAttribute('aria-expanded', 'false');
@@ -846,6 +1046,7 @@ const bindUi = () => {
 renderNav();
 renderDaySelect();
 renderDays();
+renderOverview();
 renderEsta();
 renderEsim();
 renderParks();
@@ -866,4 +1067,5 @@ window.addEventListener('load', () => {
 
 window.addEventListener('resize', () => {
   refreshMaps();
+  refreshOverviewMap();
 });

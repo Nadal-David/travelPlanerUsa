@@ -228,6 +228,24 @@ const tripDays = [
   }
 ];
 
+const overviewTrip = {
+  title: 'Itinéraire global',
+  subtitle: 'Les grandes étapes du roadtrip aux États-Unis, dans l’ordre du voyage.',
+  directionsUrl: 'https://www.google.com/maps/dir/?api=1&origin=Los+Angeles&destination=San+Francisco&travelmode=driving&waypoints=Laughlin+NV%7CGrand+Canyon+AZ%7CMonument+Valley+UT%7CPage+AZ%7CBryce+Canyon+National+Park+UT%7CLas+Vegas%7CVisalia%7CYosemite+National+Park%7CSan+Francisco',
+  stops: [
+    { label: 'Los Angeles, CA', lat: 34.0522, lng: -118.2437, days: 'J1 à J4' },
+    { label: 'Laughlin, NV', lat: 35.1678, lng: -114.5730, days: 'J5' },
+    { label: 'Grand Canyon, AZ', lat: 36.0544, lng: -112.1401, days: 'J6 à J8' },
+    { label: 'Monument Valley, UT', lat: 36.9989, lng: -110.0984, days: 'J8' },
+    { label: 'Page / Lake Powell, AZ', lat: 36.9147, lng: -111.4558, days: 'J9' },
+    { label: 'Bryce Canyon, UT', lat: 37.5930, lng: -112.1871, days: 'J10' },
+    { label: 'Las Vegas, NV', lat: 36.1699, lng: -115.1398, days: 'J11 à J13' },
+    { label: 'Visalia, CA', lat: 36.3302, lng: -119.2921, days: 'J13 à J15' },
+    { label: 'Yosemite, CA', lat: 37.8651, lng: -119.5383, days: 'J15 à J17' },
+    { label: 'San Francisco, CA', lat: 37.7749, lng: -122.4194, days: 'J18 à J19' }
+  ]
+};
+
 const estaInfo = {
   title: 'ESTA',
   mainLink: 'https://esta.cbp.dhs.gov/',
