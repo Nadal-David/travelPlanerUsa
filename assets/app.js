@@ -10,6 +10,9 @@ const dayPickerButton = document.querySelector('#day-picker-button');
 const dayPickerLabel = document.querySelector('#day-picker-label');
 const dayPickerMenu = document.querySelector('#day-picker-menu');
 const dayPickerWrap = document.querySelector('#day-picker-wrap');
+const dayPrev = document.querySelector('#day-prev');
+const dayNext = document.querySelector('#day-next');
+const dayCounter = document.querySelector('#day-counter');
 const travelerContainer = document.querySelector('#traveler-container');
 const esimContainer = document.querySelector('#esim-container');
 const parksContainer = document.querySelector('#parks-container');
@@ -23,6 +26,8 @@ const metaFlights = document.querySelector('#meta-flights');
 const storageKey = 'travel-planner-usa-checklist-v1';
 const selectedTabKey = 'travel-planner-usa-tab-v1';
 const storedChecks = JSON.parse(localStorage.getItem(storageKey) || '{}');
+let activeDayIndex = 0;
+const dayMaps = new Map();
 
 const escapeHtml = (value) => String(value)
   .replaceAll('&', '&amp;')
@@ -47,6 +52,8 @@ const uniqueCities = (days) => {
   });
   return cities.size;
 };
+
+const mapActionButtonClass = 'inline-flex items-center justify-center rounded-lg border border-sky-700/40 bg-sky-500/10 px-3 py-2 text-sm font-semibold text-sky-200 transition hover:border-sky-400/50 hover:bg-sky-500/15 hover:text-white';
 
 const renderFlightSegment = (segment) => `
   <div class="rounded-xl border border-slate-700 bg-slate-900 p-3">
@@ -140,7 +147,7 @@ const renderMapPanel = (map, index) => map ? `
           `).join('')}
         </ul>
         <a
-          class="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-sky-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-sky-400"
+          class="mt-4 w-full ${mapActionButtonClass}"
           href="${escapeHtml(map.directionsUrl)}"
           target="_blank"
           rel="noreferrer"
@@ -177,18 +184,93 @@ const renderVisit = (visit) => visit ? `
   </div>
 ` : '';
 
-const renderHotel = (hotel) => hotel ? `
-  <div class="mt-4 rounded-xl border border-slate-700 bg-slate-900 p-3">
-    <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-200">Hôtel</p>
-    <p class="mt-2 text-sm font-semibold text-white">${escapeHtml(hotel)}</p>
-  </div>
-` : '';
+const renderHotel = (hotel) => {
+  if (!hotel) return '';
+  if (typeof hotel === 'string') {
+    return `
+      <div class="mt-4 rounded-xl border border-slate-700 bg-slate-900 p-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-200">Hôtel</p>
+        <p class="mt-2 text-sm font-semibold text-white">${escapeHtml(hotel)}</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="mt-4 rounded-xl border border-slate-700 bg-slate-900 p-3">
+      <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-200">Hôtel</p>
+      <p class="mt-2 text-sm font-semibold text-white">${escapeHtml(hotel.name)}</p>
+      ${hotel.address ? `<p class="mt-1 text-sm text-slate-300">${escapeHtml(hotel.address)}</p>` : ''}
+      <div class="mt-3 grid gap-2 sm:grid-cols-2">
+        ${hotel.dates ? `
+          <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Dates</p>
+            <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(hotel.dates)}</p>
+          </div>
+        ` : ''}
+        ${hotel.nights ? `
+          <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Nuit(s)</p>
+            <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(hotel.nights)}</p>
+          </div>
+        ` : ''}
+        ${hotel.mealPlan ? `
+          <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Plan de repas</p>
+            <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(hotel.mealPlan)}</p>
+          </div>
+        ` : ''}
+        <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Petit déjeuner</p>
+          <p class="mt-1 text-sm font-semibold ${hotel.breakfast ? 'text-emerald-300' : 'text-amber-200'}">
+            ${hotel.breakfast ? 'Oui' : 'Non'}
+          </p>
+        </div>
+        ${hotel.roomType ? `
+          <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3 sm:col-span-2">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Type de chambre</p>
+            <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(hotel.roomType)}</p>
+          </div>
+        ` : ''}
+        ${hotel.mapsUrl ? `
+          <a
+            class="${mapActionButtonClass} sm:col-span-2"
+            href="${escapeHtml(hotel.mapsUrl)}"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Ouvrir sur Google Maps
+          </a>
+        ` : ''}
+      </div>
+    </div>
+  `;
+};
 
 const renderCar = (car) => car ? `
   <div class="mt-4 rounded-xl border border-slate-700 bg-slate-900 p-3">
     <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-200">${escapeHtml(car.label)}</p>
-    <p class="mt-2 text-sm font-semibold text-white">Heure : ${escapeHtml(car.time)}</p>
-    <p class="mt-1 text-sm text-slate-300">${escapeHtml(car.place)}</p>
+    <div class="mt-2 grid gap-2 sm:grid-cols-2">
+      <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Heure</p>
+        <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(car.time)}</p>
+      </div>
+      <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Lieu</p>
+        <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(car.place)}</p>
+      </div>
+      ${car.agency ? `
+        <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Agence</p>
+          <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(car.agency)}</p>
+        </div>
+      ` : ''}
+      ${car.model ? `
+        <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Véhicule</p>
+          <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(car.model)}</p>
+        </div>
+      ` : ''}
+    </div>
   </div>
 ` : '';
 
@@ -209,9 +291,16 @@ const renderDayCard = (day, index) => `
       <section class="mt-4 rounded-xl border border-slate-700 bg-slate-900 p-3">
         <div class="flex items-center justify-between gap-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-sky-200">${escapeHtml(day.flights.title)}</p>
-          <span class="rounded-full border border-slate-600 bg-slate-950/60 px-3 py-1 text-xs font-bold text-sky-100">
-            ${day.flights.segments.length} segment${day.flights.segments.length > 1 ? 's' : ''}
-          </span>
+          <div class="flex flex-wrap items-center gap-2">
+            ${day.flights.duration ? `
+              <span class="rounded-full border border-slate-600 bg-slate-950/60 px-3 py-1 text-xs font-bold text-sky-100">
+                Durée ${escapeHtml(day.flights.duration)}
+              </span>
+            ` : ''}
+            <span class="rounded-full border border-slate-600 bg-slate-950/60 px-3 py-1 text-xs font-bold text-sky-100">
+              ${day.flights.segments.length} segment${day.flights.segments.length > 1 ? 's' : ''}
+            </span>
+          </div>
         </div>
         <div class="mt-3 grid gap-2">
           ${day.flights.segments.map((segment, segmentIndex) => `
@@ -239,7 +328,18 @@ const renderDayCard = (day, index) => `
 `;
 
 const renderDays = () => {
-  daysContainer.innerHTML = tripDays.map(renderDayCard).join('');
+  const day = tripDays[activeDayIndex];
+  daysContainer.innerHTML = day ? renderDayCard(day, activeDayIndex) : '';
+};
+
+const refreshMaps = () => {
+  if (!window.L) return;
+  dayMaps.forEach((state) => {
+    state.map.invalidateSize();
+    if (state.bounds && state.bounds.length > 1) {
+      state.map.fitBounds(state.bounds, { padding: [24, 24] });
+    }
+  });
 };
 
 const mountMaps = () => {
@@ -267,6 +367,8 @@ const mountMaps = () => {
       zoomControl: true,
       scrollWheelZoom: false
     }).setView([day.map.center.lat, day.map.center.lng], day.map.zoom || 12);
+    const state = { map, bounds: [] };
+    dayMaps.set(index, state);
 
     window.L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 19,
@@ -277,7 +379,15 @@ const mountMaps = () => {
     day.map.stops.forEach((stop) => {
       const coords = [stop.lat, stop.lng];
       bounds.push(coords);
-      window.L.marker(coords).addTo(map).bindPopup(stop.label);
+      state.bounds = bounds;
+      const stopNumber = bounds.length;
+      const markerIcon = window.L.divIcon({
+        className: 'stop-marker',
+        html: `<div class="stop-marker__inner">${stopNumber}</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+      });
+      window.L.marker(coords, { icon: markerIcon }).addTo(map).bindPopup(`${stopNumber}. ${stop.label}`);
     });
 
     if (bounds.length > 1) {
@@ -505,12 +615,26 @@ const renderChecklistItem = (item) => `
 
 const renderChecklistGroup = (title, items, container, options = {}) => {
   if (!container) return;
+  const renderItems = (list) => list.map(renderChecklistItem).join('');
   container.innerHTML = `
     <section class="${options.sectionClass || 'day-card rounded-xl p-4 sm:p-5'}">
       <h3 class="${options.titleClass || 'text-[19px] font-bold uppercase tracking-[0.22em] text-sky-300'}">${escapeHtml(title)}</h3>
-      <div class="${options.itemsClass || 'mt-3 space-y-1.5'} ${options.indentClass || 'pl-8'}">
-        ${items.map(renderChecklistItem).join('')}
-      </div>
+      ${Array.isArray(items) ? `
+        <div class="${options.itemsClass || 'mt-3 space-y-1.5'} ${options.indentClass || 'pl-8'}">
+          ${renderItems(items)}
+        </div>
+      ` : `
+        <div class="mt-3 space-y-4">
+          ${(items.sections || []).map((section) => `
+            <div>
+              <h4 class="text-[15px] font-semibold uppercase tracking-[0.18em] text-slate-400">${escapeHtml(section.title)}</h4>
+              <div class="${options.itemsClass || 'mt-3 space-y-1.5'} ${options.indentClass || 'pl-8'}">
+                ${renderItems(section.items || [])}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
     </section>
   `;
 };
@@ -569,7 +693,7 @@ const renderNav = () => {
 
   navTabs.innerHTML = tabs.map((tab) => `
     <button
-      class="flex w-full items-center justify-center rounded-2xl border border-slate-700 bg-slate-950/40 px-3 py-2 text-center text-[12px] font-semibold leading-tight text-slate-300 transition hover:border-sky-400/35 hover:text-white sm:w-auto sm:rounded-full sm:px-4 sm:py-2 sm:text-sm"
+      class="flex shrink-0 items-center justify-center rounded-full border border-slate-700 bg-slate-950/40 px-3 py-1.5 text-center text-[11px] font-semibold leading-tight text-slate-300 transition hover:border-sky-400/35 hover:text-white sm:px-4 sm:text-sm"
       data-tab="${tab.id}"
       type="button"
     >
@@ -618,17 +742,32 @@ const setActiveTab = (tab) => {
     button.classList.toggle('text-slate-300', !active);
     button.classList.toggle('border-slate-700', !active);
   });
+
+  if (tab === 'days') {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        refreshMaps();
+      });
+    });
+  }
 };
 
 const setActiveDay = (index, options = {}) => {
-  const { scroll = true } = options;
-  if (dayPickerLabel) {
-    const day = tripDays[index];
-    dayPickerLabel.textContent = `Jour ${index + 1} - ${day.date}`;
+  const maxIndex = tripDays.length - 1;
+  const nextIndex = Math.min(Math.max(Number(index) || 0, 0), maxIndex);
+  activeDayIndex = nextIndex;
+
+  const day = tripDays[activeDayIndex];
+
+  if (dayPickerLabel && day) {
+    dayPickerLabel.textContent = `Jour ${activeDayIndex + 1} - ${day.date}`;
+  }
+  if (dayCounter && day) {
+    dayCounter.textContent = `Jour ${activeDayIndex + 1} / ${tripDays.length} • ${day.date}`;
   }
   if (dayPickerMenu) {
     dayPickerMenu.querySelectorAll('[data-day-index]').forEach((button) => {
-      const active = Number(button.dataset.dayIndex) === index;
+      const active = Number(button.dataset.dayIndex) === activeDayIndex;
       button.classList.toggle('bg-sky-500/10', active);
       button.classList.toggle('text-white', active);
       button.classList.toggle('border-sky-400/40', active);
@@ -637,11 +776,16 @@ const setActiveDay = (index, options = {}) => {
       button.setAttribute('aria-selected', active ? 'true' : 'false');
     });
   }
+  if (dayPrev) dayPrev.disabled = activeDayIndex === 0;
+  if (dayNext) dayNext.disabled = activeDayIndex === maxIndex;
 
-  if (scroll) {
-    const target = document.querySelector(`#day-${index}`);
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  renderDays();
+  mountMaps();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      refreshMaps();
+    });
+  });
 };
 
 const bindChecklistHandlers = () => {
@@ -658,6 +802,18 @@ const bindUi = () => {
     if (!button) return;
     setActiveTab(button.dataset.tab);
   });
+
+  if (dayPrev) {
+    dayPrev.addEventListener('click', () => {
+      setActiveDay(activeDayIndex - 1);
+    });
+  }
+
+  if (dayNext) {
+    dayNext.addEventListener('click', () => {
+      setActiveDay(activeDayIndex + 1);
+    });
+  }
 
   if (dayPickerButton && dayPickerMenu) {
     dayPickerButton.addEventListener('click', () => {
@@ -702,8 +858,12 @@ if (metaCities) metaCities.textContent = String(uniqueCities(tripDays));
 if (metaFlights) metaFlights.textContent = String(tripDays.filter((day) => day.flights).length);
 
 setActiveTab(getSelectedTab());
-setActiveDay(0, { scroll: false });
+setActiveDay(0);
 
 window.addEventListener('load', () => {
   mountMaps();
+});
+
+window.addEventListener('resize', () => {
+  refreshMaps();
 });

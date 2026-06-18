@@ -5,32 +5,45 @@ const tripDays = [
     route: 'Toulouse → Los Angeles',
     flights: {
       title: 'Vol aller',
-      connection: 'XXX',
+      connection: '2h45',
+      duration: '15h50',
       segments: [
         {
-          number: 'XXX',
+          number: 'AF 7421',
           from: 'Toulouse (TLS)',
-          to: 'Paris (XXX)',
-          depart: 'XXX',
-          arrive: 'XXX'
+          to: 'Paris Charles de Gaulle (CDG)',
+          depart: '06:05',
+          arrive: '07:35'
         },
         {
-          number: 'XXX',
-          from: 'Paris (XXX)',
+          number: 'AF 22',
+          from: 'Paris Charles de Gaulle (CDG)',
           to: 'Los Angeles (LAX)',
-          depart: 'XXX',
-          arrive: 'XXX'
+          depart: '10:20',
+          arrive: '12:55'
         }
       ]
     },
     car: {
       label: 'Récupération voiture',
-      time: 'XXX',
-      place: "Agence Dollar à l'aéroport"
+      time: '20/09/2026 14:00',
+      place: 'Los Angeles Intl Airport',
+      agency: 'Dollar',
+      model: 'Kia K5 ou similaire'
     },
-    hotel: 'À définir',
+    hotel: {
+      name: 'Hollywood Historic Hotel',
+      address: '5162 Melrose Avenue, Los Angeles',
+      dates: '20/09/2026 au 24/09/2026',
+      nights: '4 nuits',
+      breakfast: false,
+      mealPlan: 'Chambre seulement',
+      roomType: 'Double room king bed - de luxe',
+      mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Hollywood+Historic+Hotel+5162+Melrose+Avenue+Los+Angeles'
+    },
     itinerary: [
       { time: 'Après l’atterrissage', label: 'Récupérer la voiture à l’agence Dollar à LAX' },
+      { time: 'Juste après', label: 'Passer à l’hôtel Hollywood Historic Hotel pour déposer les bagages / check-in' },
       { time: 'Début d’après-midi', label: 'Venice Canals pour la première balade calme' },
       { time: 'Milieu d’après-midi', label: 'Venice Beach et Muscle Beach' },
       { time: 'Fin de journée', label: 'Santa Monica Beach puis Santa Monica Pier au coucher du soleil' }
@@ -41,11 +54,13 @@ const tripDays = [
       zoom: 12,
       stops: [
         { label: 'LAX / Dollar', lat: 33.9416, lng: -118.4085 },
+        { label: 'Hollywood Historic Hotel', lat: 34.0834, lng: -118.3283 },
         { label: 'Venice Canals', lat: 33.9856, lng: -118.4722 },
         { label: 'Venice Beach', lat: 33.9850, lng: -118.4695 },
+        { label: 'Muscle Beach', lat: 33.9855, lng: -118.4737 },
         { label: 'Santa Monica Pier', lat: 34.0094, lng: -118.4973 }
       ],
-      directionsUrl: 'https://www.google.com/maps/dir/?api=1&origin=Los+Angeles+International+Airport&destination=Santa+Monica+Pier&travelmode=driving&waypoints=Venice+Canals%7CVenice+Beach%7CMuscle+Beach'
+      directionsUrl: 'https://www.google.com/maps/dir/?api=1&origin=Los+Angeles+International+Airport&destination=Santa+Monica+Pier&travelmode=driving&waypoints=Hollywood+Historic+Hotel%7CVenice+Canals%7CVenice+Beach%7CMuscle+Beach'
     },
     highlights: [
       'Venice Canals',
@@ -205,8 +220,10 @@ const tripDays = [
     },
     car: {
       label: 'Dépôt voiture',
-      time: 'XXX',
-      place: "Agence Dollar à l'aéroport"
+      time: '08/10/2026 18:00',
+      place: 'San Francisco Intl Airport',
+      agency: 'Dollar',
+      model: 'Kia K5 ou similaire'
     }
   }
 ];
@@ -306,6 +323,7 @@ const nationalParks = [
 const prepTodo = [
   { id: 'esta', label: 'Acheter ESTA', linkLabel: 'ESTA', linkTab: 'esta', checked: false },
   { id: 'parks-pass', label: 'Acheter pass parc nationaux', linkLabel: 'Parcs', linkTab: 'parks', checked: false },
+  { id: 'air-france-checkin', label: 'Préparer le check-in du vol Air France', checked: false },
   { id: 'universal-entry', label: 'Voir avec l’agence pour les entrées universal studio', checked: false },
   { id: 'passport-numbers', label: 'Transmettre les numéros de passeport à l’agence', checked: false }
 ];
@@ -329,10 +347,25 @@ const travelTodo = {
     { id: 'e-esta', label: 'ESTA', checked: false },
     { id: 'e-esim', label: 'Acheter eSIM', checked: false }
   ],
-  'David et Emeline': [
-    { id: 'both-visa', label: 'Carte Visa première', checked: false },
-    { id: 'both-pass', label: 'America the Beautiful Pass', checked: false },
-    { id: 'both-bag', label: '1 valise chacun 23kg max', checked: false },
-    { id: 'both-umbrella', label: 'Parapluie', checked: false }
-  ]
+  'David et Emeline': {
+    sections: [
+      {
+        title: 'Valise',
+        items: [
+          { id: 'both-bag', label: '1 valise chacun 23kg max', checked: false },
+          { id: 'swimwear', label: 'Maillots et affaires de plage', checked: false },
+          { id: 'tupperware', label: 'Tupperware', checked: false },
+          { id: 'power-adapter', label: 'Adaptateur secteur', checked: false },
+          { id: 'both-umbrella', label: 'Parapluie', checked: false }
+        ]
+      },
+      {
+        title: 'Cartes et pass',
+        items: [
+          { id: 'both-visa', label: 'Carte Visa première', checked: false },
+          { id: 'both-pass', label: 'America the Beautiful Pass', checked: false }
+        ]
+      }
+    ]
+  }
 };
