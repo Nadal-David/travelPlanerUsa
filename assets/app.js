@@ -41,6 +41,17 @@ const escapeHtml = (value) => String(value)
   .replaceAll('"', '&quot;')
   .replaceAll("'", '&#39;');
 
+const buildMapsSearchUrl = (stop) => {
+  if (stop?.mapsUrl) return stop.mapsUrl;
+  if (stop?.label) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(stop.label)}`;
+  }
+  if (typeof stop?.lat === 'number' && typeof stop?.lng === 'number') {
+    return `https://www.google.com/maps/search/?api=1&query=${stop.lat},${stop.lng}`;
+  }
+  return 'https://www.google.com/maps';
+};
+
 const saveChecks = () => localStorage.setItem(storageKey, JSON.stringify(storedChecks));
 const getSelectedTab = () => localStorage.getItem(selectedTabKey) || 'days';
 const setChecked = (id, checked) => {
@@ -59,6 +70,7 @@ const uniqueCities = (days) => {
 };
 
 const mapActionButtonClass = 'inline-flex items-center justify-center rounded-lg border border-sky-700/40 bg-sky-500/10 px-3 py-2 text-sm font-semibold text-sky-200 transition hover:border-sky-400/50 hover:bg-sky-500/15 hover:text-white';
+const mapMarkerButtonClass = 'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-sky-700/40 bg-sky-500/10 text-sky-200 transition hover:border-sky-400/50 hover:bg-sky-500/15 hover:text-white focus:border-sky-400/60 focus:outline-none focus:ring-2 focus:ring-sky-400/20';
 
 const renderFlightSegment = (segment) => `
   <div class="rounded-xl border border-slate-700 bg-slate-900 p-3">
@@ -147,7 +159,19 @@ const renderMapPanel = (map, index) => map ? `
               <span class="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full border border-sky-400/30 bg-sky-500/10 px-2 text-[11px] font-bold text-sky-200">
                 ${stopIndex + 1}
               </span>
-              <span class="text-sm font-semibold text-slate-100">${escapeHtml(stop.label)}</span>
+              <span class="min-w-0 flex-1 text-sm font-semibold text-slate-100">${escapeHtml(stop.label)}</span>
+              <a
+                class="${mapMarkerButtonClass}"
+                href="${escapeHtml(buildMapsSearchUrl(stop))}"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Ouvrir ${escapeHtml(stop.label)} dans Google Maps"
+                title="Ouvrir dans Google Maps"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" class="h-4 w-4">
+                  <path fill="currentColor" d="M12 2c3.866 0 7 3.134 7 7 0 5.25-7 13-7 13S5 14.25 5 9c0-3.866 3.134-7 7-7Zm0 9.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5.5Z"/>
+                </svg>
+              </a>
             </li>
           `).join('')}
         </ul>

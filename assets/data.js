@@ -30,38 +30,43 @@ const tripDays = [
       place: 'Los Angeles Intl Airport',
       agency: 'Dollar',
       model: 'Kia K5 ou similaire'
-    },
-    hotel: {
-      name: 'Hollywood Historic Hotel',
-      address: '5162 Melrose Avenue, Los Angeles',
-      dates: '20/09/2026 au 24/09/2026',
-      nights: '4 nuits',
-      breakfast: false,
-      mealPlan: 'Chambre seulement',
-      roomType: 'Double room king bed - de luxe',
-      mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Hollywood+Historic+Hotel+5162+Melrose+Avenue+Los+Angeles'
-    },
-    itinerary: [
-      { time: 'Après l’atterrissage', label: 'Récupérer la voiture à l’agence Dollar à LAX' },
-      { time: 'Juste après', label: 'Passer à l’hôtel Hollywood Historic Hotel pour déposer les bagages / check-in' },
-      { time: 'Début d’après-midi', label: 'Venice Canals pour la première balade calme' },
-      { time: 'Milieu d’après-midi', label: 'Venice Beach et Muscle Beach' },
-      { time: 'Fin de journée', label: 'Santa Monica Beach puis Santa Monica Pier au coucher du soleil' }
-    ],
+      },
+      hotel: {
+        name: 'Hollywood Melrose Hotel',
+        address: '5162 Melrose Ave, Los Angeles, CA 90038, États-Unis',
+        dates: '20/09/2026 au 24/09/2026',
+        nights: '4 nuits',
+        breakfast: false,
+        mealPlan: 'Chambre seulement',
+        roomType: 'Double room king bed - de luxe',
+        mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Hollywood+Melrose+Hotel+5162+Melrose+Ave+Los+Angeles+CA+90038'
+      },
+      itinerary: [
+        { time: 'Après l’atterrissage', label: 'Récupérer la voiture à l’agence Dollar à LAX' },
+        { time: 'Juste après', label: 'Passer à l’hôtel Hollywood Melrose Hotel pour déposer les bagages / check-in' },
+        { time: 'Début d’après-midi', label: 'Venice Canals pour la première balade calme' },
+        { time: 'Milieu d’après-midi', label: 'Venice Beach et Muscle Beach' },
+        { time: 'Fin de journée', label: 'Santa Monica Beach puis Santa Monica Pier au coucher du soleil' }
+      ],
     map: {
       title: 'Jour 1 - Los Angeles',
       center: { lat: 34.0, lng: -118.46 },
-      zoom: 12,
-      stops: [
-        { label: 'LAX / Dollar', lat: 33.9416, lng: -118.4085 },
-        { label: 'Hollywood Historic Hotel', lat: 34.0834, lng: -118.3283 },
-        { label: 'Venice Canals', lat: 33.9856, lng: -118.4722 },
-        { label: 'Venice Beach', lat: 33.9850, lng: -118.4695 },
-        { label: 'Muscle Beach', lat: 33.9855, lng: -118.4737 },
-        { label: 'Santa Monica Pier', lat: 34.0094, lng: -118.4973 }
-      ],
-      directionsUrl: 'https://www.google.com/maps/dir/?api=1&origin=Los+Angeles+International+Airport&destination=Santa+Monica+Pier&travelmode=driving&waypoints=Hollywood+Historic+Hotel%7CVenice+Canals%7CVenice+Beach%7CMuscle+Beach'
-    },
+        zoom: 12,
+        stops: [
+          { label: 'LAX / Dollar', lat: 33.9416, lng: -118.4085 },
+          {
+            label: 'Hollywood Melrose Hotel',
+            lat: 34.0834396,
+            lng: -118.3137125,
+            mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Hollywood+Melrose+Hotel+5162+Melrose+Ave+Los+Angeles+CA+90038'
+          },
+          { label: 'Venice Canals', lat: 33.9856, lng: -118.4722 },
+          { label: 'Venice Beach', lat: 33.9850, lng: -118.4695 },
+          { label: 'Muscle Beach', lat: 33.9855, lng: -118.4737, mapsUrl: 'https://www.google.com/maps/place/Muscle+Beach+Venice+Gym/@33.9854719,-118.4733791,278m/data=!3m1!1e3!4m6!3m5!1s0x80c2bbde9825e3c9:0xb6b7e4082eb28e0e!8m2!3d33.9853693!4d-118.4725161!16s%2Fg%2F11rvhnp2xh?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D' },
+          { label: 'Santa Monica Pier', lat: 34.0094, lng: -118.4973 }
+        ],
+        directionsUrl: 'https://www.google.com/maps/dir/?api=1&origin=Los+Angeles+International+Airport&destination=Santa+Monica+Pier&travelmode=driving&waypoints=Hollywood+Melrose+Hotel%7CVenice+Canals%7CVenice+Beach%7CMuscle+Beach'
+      },
     highlights: [
       'Venice Canals',
       'Venice Beach',
@@ -84,7 +89,40 @@ const tripDays = [
     date: '21/09/2026',
     title: 'Jour 2',
     route: 'Los Angeles',
-    highlights: ['Hollywood', 'Beverly Hills', 'Rodeo Drive', 'Fin de journée à la plage'],
+    highlights: [
+      'Hollywood Boulevard',
+      'Walk of Fame',
+      'Beverly Hills',
+      'Rodeo Drive',
+      'Sunset Boulevard',
+      'Third Street Promenade'
+    ],
+      itinerary: [
+        { time: 'Matin', label: 'Départ depuis le Hollywood Melrose Hotel' },
+        { time: 'Matinée Hollywood', label: 'Hollywood Boulevard et Walk of Fame' },
+        { time: 'Début d’après-midi', label: 'Beverly Hills puis Rodeo Drive et Sunset Boulevard' },
+        { time: 'Soirée', label: 'Direction Third Street Promenade pour la fin de journée' }
+      ],
+    map: {
+      title: 'Jour 2 - Hollywood, Beverly Hills & plage',
+      center: { lat: 34.08, lng: -118.36 },
+        zoom: 12,
+        stops: [
+          {
+            label: 'Hollywood Melrose Hotel',
+            lat: 34.0834396,
+            lng: -118.3137125,
+            mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Hollywood+Melrose+Hotel+5162+Melrose+Ave+Los+Angeles+CA+90038'
+          },
+          { label: 'Hollywood Boulevard', lat: 34.1016, lng: -118.3389 },
+          { label: 'Walk of Fame', lat: 34.1019, lng: -118.3396 },
+          { label: 'Beverly Hills', lat: 34.0736, lng: -118.4004, mapsUrl: 'https://www.google.com/maps/place/Beverly+Hills,+Californie,+%C3%89tats-Unis/@34.0688506,-118.4030033,1867m/data=!3m1!1e3!4m11!3m10!1s0x80c2bc04d6d147ab:0xd6c7c379fd081ed1!5m4!1s2026-09-20!2i4!4m1!1i2!8m2!3d34.0730715!4d-118.4016265!16zL20vMGswNDk?entry=ttu&g_ep=EgoyMDI2MDYxMy4wIKXMDSoASAFQAw%3D%3D' },
+        { label: 'Rodeo Drive', lat: 34.0675, lng: -118.4016 },
+        { label: 'Sunset Boulevard', lat: 34.0900, lng: -118.3849 },
+        { label: 'Third Street Promenade', lat: 34.0156, lng: -118.4960, mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Third+Street+Promenade+Santa+Monica' }
+      ],
+        directionsUrl: 'https://www.google.com/maps/dir/?api=1&origin=Hollywood+Melrose+Hotel+5162+Melrose+Ave+Los+Angeles+CA+90038&destination=Third+Street+Promenade+Santa+Monica&travelmode=driving&waypoints=Hollywood+Boulevard%7CWalk+of+Fame%7CBeverly+Hills%7CRodeo+Drive%7CSunset+Boulevard'
+      },
     links: [
       {
         label: 'Nos conseils pour visiter Hollywood, quartier le plus célèbre de LA',
@@ -93,10 +131,13 @@ const tripDays = [
       {
         label: 'Visiter Beverly Hills et Rodeo Drive, les quartiers chics de LA',
         url: 'https://www.roadtrippin.fr/californie/los-angeles/beverly-hills.php'
+      },
+      {
+        label: 'En complément: plage de Santa Monica et Venice',
+        url: 'https://www.roadtrippin.fr/californie/los-angeles/santa-monica-venice.php'
       }
     ]
-  },
-  {
+  },  {
     date: '22/09/2026',
     title: 'Jour 3',
     route: 'Los Angeles',
