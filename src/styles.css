@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -45,6 +45,49 @@
     @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em];
   }
 
+  .timeline-list {
+    position: relative;
+    padding-left: 0;
+  }
+
+  .timeline-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.375rem 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.4rem 0;
+  }
+
+  .timeline-item:not(:last-child) {
+    margin-bottom: 0.05rem;
+  }
+
+  .timeline-dot {
+    z-index: 1;
+    display: inline-flex;
+    min-width: 1.875rem;
+    height: 1.875rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    border: 1px solid rgba(34, 211, 238, 0.5);
+    background: rgba(8, 47, 73, 0.95);
+    color: #cffafe;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 10px 18px rgba(2, 6, 23, 0.28);
+    justify-self: center;
+  }
+
+  .timeline-text {
+    min-width: 0;
+    padding-top: 0.05rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #e2e8f0;
+  }
+
   .stop-marker {
     background: transparent;
     border: 0;
@@ -85,3 +128,4 @@
     color: #dbeafe;
   }
 }
+

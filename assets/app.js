@@ -257,6 +257,53 @@ const renderVisit = (visit) => visit ? `
   </div>
 ` : '';
 
+const renderTransport = (transport) => transport ? `
+  <div class="mt-4 overflow-hidden rounded-xl border border-cyan-800/40 bg-slate-900">
+    <div class="border-b border-cyan-800/40 px-4 py-3">
+      <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-cyan-200">${escapeHtml(transport.title || 'Transport en commun')}</p>
+      <h3 class="mt-1 text-lg font-bold text-white">${escapeHtml(transport.summary || 'Accès sans voiture')}</h3>
+        ${transport.duration ? `<p class="mt-1 text-sm text-slate-300">Temps total estimé à pied: ${escapeHtml(transport.duration)}</p>` : ''}
+        ${transport.driveDuration ? `<p class="mt-1 text-sm text-slate-300">En voiture: ${escapeHtml(transport.driveDuration)}</p>` : ''}
+        ${transport.hours ? `<p class="mt-1 text-sm text-slate-300">${escapeHtml(transport.hours)}</p>` : ''}
+    </div>
+    <div class="grid gap-3 p-3 md:grid-cols-2">
+      <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Aller</p>
+        <ol class="timeline-list mt-3">
+          ${(transport.outbound || []).map((step, stepIndex) => `
+            <li class="timeline-item">
+              <span class="timeline-dot">${stepIndex + 1}</span>
+              <span class="timeline-text">${escapeHtml(step)}</span>
+            </li>
+          `).join('')}
+        </ol>
+      </div>
+      <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Retour</p>
+        <ol class="timeline-list mt-3">
+          ${(transport.inbound || []).map((step, stepIndex) => `
+            <li class="timeline-item">
+              <span class="timeline-dot">${stepIndex + 1}</span>
+              <span class="timeline-text">${escapeHtml(step)}</span>
+            </li>
+          `).join('')}
+        </ol>
+      </div>
+      ${transport.parking ? `
+        <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3 md:col-span-2">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Parking</p>
+          <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(transport.parking)}</p>
+        </div>
+      ` : ''}
+      ${transport.link ? `
+        <a class="md:col-span-2 ${mapActionButtonClass}" href="${escapeHtml(transport.link.url)}" target="_blank" rel="noreferrer">
+          ${escapeHtml(transport.link.label)}
+        </a>
+      ` : ''}
+    </div>
+  </div>
+` : '';
+
 const renderHotel = (hotel) => {
   if (!hotel) return '';
   if (typeof hotel === 'string') {
@@ -298,6 +345,12 @@ const renderHotel = (hotel) => {
             ${hotel.breakfast ? 'Oui' : 'Non'}
           </p>
         </div>
+        ${hotel.reception ? `
+          <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3 sm:col-span-2">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Réception</p>
+            <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(hotel.reception)}</p>
+          </div>
+        ` : ''}
         ${hotel.roomType ? `
           <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3 sm:col-span-2">
             <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Type de chambre</p>
@@ -393,6 +446,7 @@ const renderDayCard = (day, index) => `
     ${renderCar(day.car)}
     ${renderHotel(day.hotel)}
     ${renderVisit(day.visit)}
+    ${renderTransport(day.transport)}
     ${renderHighlights(day.highlights)}
     ${renderItinerary(day.itinerary)}
     ${renderMapPanel(day.map, index)}
