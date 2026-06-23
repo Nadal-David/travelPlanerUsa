@@ -34,6 +34,20 @@ let activeDayIndex = 0;
 const dayMaps = new Map();
 let overviewMapState = null;
 
+const getOfflineRoute = (id) => offlineRouteGeoJson?.features?.find(
+  (feature) => feature.properties?.id === id
+);
+
+const fitMapState = (state) => {
+  if (state.routeBounds?.isValid?.()) {
+    state.map.fitBounds(state.routeBounds, { padding: [24, 24] });
+    return;
+  }
+  if (state.bounds?.length > 1) {
+    state.map.fitBounds(state.bounds, { padding: [24, 24] });
+  }
+};
+
 const escapeHtml = (value) => String(value)
   .replaceAll('&', '&amp;')
   .replaceAll('<', '&lt;')
@@ -343,8 +357,8 @@ const renderHotel = (hotel) => {
         ` : ''}
         <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Petit déjeuner</p>
-          <p class="mt-1 text-sm font-semibold ${hotel.breakfast ? 'text-emerald-300' : 'text-amber-200'}">
-            ${hotel.breakfast ? 'Oui' : 'Non'}
+          <p class="mt-1 text-sm font-semibold ${hotel.breakfast === true ? 'text-emerald-300' : 'text-amber-200'}">
+            ${hotel.breakfast === true ? 'Oui' : hotel.breakfast === false ? 'Non' : '&Agrave; confirmer'}
           </p>
         </div>
         ${hotel.reception ? `
@@ -465,9 +479,7 @@ const refreshMaps = () => {
   if (!window.L) return;
   dayMaps.forEach((state) => {
     state.map.invalidateSize();
-    if (state.bounds && state.bounds.length > 1) {
-      state.map.fitBounds(state.bounds, { padding: [24, 24] });
-    }
+    fitMapState(state);
   });
 };
 
@@ -496,7 +508,7 @@ const mountMaps = () => {
       zoomControl: true,
       scrollWheelZoom: false
     }).setView([day.map.center.lat, day.map.center.lng], day.map.zoom || 12);
-    const state = { map, bounds: [] };
+    const state = { map, bounds: [], routeBounds: null };
     dayMaps.set(index, state);
 
     window.L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -519,12 +531,39 @@ const mountMaps = () => {
       window.L.marker(coords, { icon: markerIcon }).addTo(map).bindPopup(`${stopNumber}. ${stop.label}`);
     });
 
-    if (bounds.length > 1) {
+    day.map.trails?.forEach((trail) => {
+      const trailCoordinates = trail.coordinates.map((point) => [point.lat, point.lng]);
+      window.L.polyline(trailCoordinates, {
+        color: '#f59e0b',
+        weight: 4,
+        opacity: 0.95,
+        dashArray: '7 7',
+        lineJoin: 'round',
+        lineCap: 'round'
+      }).addTo(map).bindPopup(trail.label);
+    });
+
+    const offlineRoute = day.map.showRoute === false ? null : getOfflineRoute(`day-${index + 1}`);
+    if (offlineRoute) {
+      const routeLayer = window.L.geoJSON(offlineRoute, {
+        style: {
+          color: '#38bdf8',
+          weight: 4,
+          opacity: 0.9,
+          lineJoin: 'round',
+          lineCap: 'round'
+        }
+      }).addTo(map);
+      state.routeBounds = routeLayer.getBounds();
+      fitMapState(state);
+    } else if (day.map.showRoute !== false && bounds.length > 1) {
       window.L.polyline(bounds, {
         color: '#38bdf8',
         weight: 4,
         opacity: 0.9
       }).addTo(map);
+      map.fitBounds(bounds, { padding: [24, 24] });
+    } else if (bounds.length > 1) {
       map.fitBounds(bounds, { padding: [24, 24] });
     }
 
@@ -537,9 +576,7 @@ const mountMaps = () => {
 const refreshOverviewMap = () => {
   if (!window.L || !overviewMapState?.map) return;
   overviewMapState.map.invalidateSize();
-  if (overviewMapState.bounds && overviewMapState.bounds.length > 1) {
-    overviewMapState.map.fitBounds(overviewMapState.bounds, { padding: [24, 24] });
-  }
+  fitMapState(overviewMapState);
 };
 
 const mountOverviewMap = () => {
@@ -567,7 +604,7 @@ const mountOverviewMap = () => {
     scrollWheelZoom: false
   }).setView([36.5, -115.5], 4);
 
-  overviewMapState = { map, bounds };
+  overviewMapState = { map, bounds, routeBounds: null };
 
   window.L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 19,
@@ -587,7 +624,20 @@ const mountOverviewMap = () => {
     window.L.marker(coords, { icon: markerIcon }).addTo(map).bindPopup(`${stopIndex + 1}. ${stop.label}`);
   });
 
-  if (bounds.length > 1) {
+  const offlineRoute = getOfflineRoute('overview');
+  if (offlineRoute) {
+    const routeLayer = window.L.geoJSON(offlineRoute, {
+      style: {
+        color: '#38bdf8',
+        weight: 4,
+        opacity: 0.9,
+        lineJoin: 'round',
+        lineCap: 'round'
+      }
+    }).addTo(map);
+    overviewMapState.routeBounds = routeLayer.getBounds();
+    fitMapState(overviewMapState);
+  } else if (bounds.length > 1) {
     window.L.polyline(bounds, {
       color: '#38bdf8',
       weight: 4,
