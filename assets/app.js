@@ -129,8 +129,8 @@ const renderItinerary = (itinerary = []) => itinerary.length ? `
     <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-sky-300">Activités</p>
     <ol class="mt-3 space-y-2">
       ${itinerary.map((step, stepIndex) => `
-        <li class="flex gap-3 rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2.5">
-          <span class="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full border border-sky-400/30 bg-sky-500/10 px-2 text-[11px] font-bold text-sky-200">
+          <li class="flex gap-3 rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2.5">
+          <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center self-center rounded-full border border-sky-400/30 bg-sky-500/10 p-0 text-[11px] font-bold leading-none text-sky-200">
             ${stepIndex + 1}
           </span>
           <div class="min-w-0">
@@ -155,11 +155,11 @@ const renderMapPanel = (map, index) => map ? `
         <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">Points clés</p>
         <ul class="mt-3 space-y-2">
           ${map.stops.map((stop, stopIndex) => `
-            <li class="flex items-start gap-3 rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2">
-              <span class="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full border border-sky-400/30 bg-sky-500/10 px-2 text-[11px] font-bold text-sky-200">
+            <li class="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2">
+              <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center self-center rounded-full border border-sky-400/30 bg-sky-500/10 p-0 text-[11px] font-bold leading-none text-sky-200">
                 ${stopIndex + 1}
               </span>
-              <span class="min-w-0 flex-1 text-sm font-semibold text-slate-100">${escapeHtml(stop.label)}</span>
+                <span class="min-w-0 flex-1 text-sm font-semibold leading-snug text-slate-100">${escapeHtml(stop.label)}</span>
               <a
                 class="${mapMarkerButtonClass}"
                 href="${escapeHtml(buildMapsSearchUrl(stop))}"
@@ -206,13 +206,13 @@ const renderOverview = () => {
             <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">Grandes étapes</p>
             <ol class="mt-3 space-y-2">
               ${overviewTrip.stops.map((stop, stopIndex) => `
-                <li class="flex items-start gap-3 rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2">
-                  <span class="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full border border-sky-400/30 bg-sky-500/10 px-2 text-[11px] font-bold text-sky-200">
+                <li class="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-950/40 px-3 py-2">
+                  <span class="inline-flex h-6 w-6 shrink-0 items-center justify-center self-center rounded-full border border-sky-400/30 bg-sky-500/10 p-0 text-[11px] font-bold leading-none text-sky-200">
                     ${stopIndex + 1}
                   </span>
                   <span class="min-w-0">
-                    <span class="block text-sm font-semibold text-slate-100">${escapeHtml(stop.label)}</span>
-                    <span class="block text-xs text-slate-400">${escapeHtml(stop.days)}</span>
+                    <span class="block text-sm font-semibold leading-snug text-slate-100">${escapeHtml(stop.label)}</span>
+                    <span class="block text-xs leading-snug text-slate-400">${escapeHtml(stop.days)}</span>
                   </span>
                 </li>
               `).join('')}
@@ -266,7 +266,7 @@ const renderTransport = (transport) => transport ? `
         ${transport.driveDuration ? `<p class="mt-1 text-sm text-slate-300">En voiture: ${escapeHtml(transport.driveDuration)}</p>` : ''}
         ${transport.hours ? `<p class="mt-1 text-sm text-slate-300">${escapeHtml(transport.hours)}</p>` : ''}
     </div>
-    <div class="grid gap-3 p-3 md:grid-cols-2">
+      <div class="grid gap-3 p-3 ${Array.isArray(transport.inbound) && transport.inbound.length > 0 ? 'md:grid-cols-2' : ''}">
       <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Aller</p>
         <ol class="timeline-list mt-3">
@@ -278,17 +278,19 @@ const renderTransport = (transport) => transport ? `
           `).join('')}
         </ol>
       </div>
-      <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Retour</p>
-        <ol class="timeline-list mt-3">
-          ${(transport.inbound || []).map((step, stepIndex) => `
-            <li class="timeline-item">
-              <span class="timeline-dot">${stepIndex + 1}</span>
-              <span class="timeline-text">${escapeHtml(step)}</span>
-            </li>
-          `).join('')}
-        </ol>
-      </div>
+      ${(transport.inbound || []).length ? `
+        <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Retour</p>
+          <ol class="timeline-list mt-3">
+            ${(transport.inbound || []).map((step, stepIndex) => `
+              <li class="timeline-item">
+                <span class="timeline-dot">${stepIndex + 1}</span>
+                <span class="timeline-text">${escapeHtml(step)}</span>
+              </li>
+            `).join('')}
+          </ol>
+        </div>
+      ` : ''}
       ${transport.parking ? `
         <div class="rounded-lg border border-slate-700 bg-slate-950/40 p-3 md:col-span-2">
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Parking</p>
