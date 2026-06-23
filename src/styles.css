@@ -95,7 +95,7 @@
     border: 0;
   }
 
-  .stop-marker__inner {
+.stop-marker__inner {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -129,5 +129,24 @@
   #todo-view a[data-tab-link]:hover {
     color: #dbeafe;
   }
+}
+
+.day-info-card {
+  border-color: rgba(250, 204, 21, 0.35);
+  background: #302b1d;
+  box-shadow: 0 8px 18px rgba(2, 6, 23, 0.16);
+}
+
+.day-info-icon {
+  background: #fde68a;
+  color: #422006;
+}
+
+.day-info-title {
+  color: #fde68a;
+}
+
+.day-info-text {
+  color: #fef3c7;
 }
 

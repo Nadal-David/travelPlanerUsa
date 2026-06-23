@@ -327,26 +327,34 @@
     transport: {
       title: 'Trajet routier',
       summary: 'Tropicana Laughlin → Holiday Inn Resort The Squire at Grand Canyon',
-      driveDuration: 'environ 3h45 · 320 km',
+      driveDuration: 'prévoir environ 4h30 avec pause · 320 km',
       outbound: [
-        'Départ du Tropicana Laughlin',
+        'Départ du Tropicana Laughlin vers 8h-9h',
         'Route vers Tusayan et le Grand Canyon',
         'Arrivée au Holiday Inn Resort The Squire at Grand Canyon'
       ]
     },
     itinerary: [
-      { time: 'Matin', label: 'Départ du Tropicana Laughlin' },
-      { time: 'Route', label: 'Trajet en voiture vers Tusayan, près du Grand Canyon' },
-      { time: 'À l’arrivée', label: 'Grand Canyon Visitor Center si arrivée avant 15h, sinon direction Mather Point' },
-      { time: 'Fin d’après-midi', label: 'Mather Point puis balade facile sur Rim Trail jusqu’à Yavapai Point (environ 1 km)' },
-      { time: 'À partir de 16h', label: 'Check-in au Holiday Inn Resort The Squire at Grand Canyon' },
-      { time: 'Coucher du soleil', label: 'Hopi Point ou Mohave Point avec la navette rouge depuis Grand Canyon Village' }
+      { time: 'Vers 8h', label: 'Départ du Tropicana Laughlin pour garder assez de marge dans l’après-midi' },
+      { time: 'Route', label: 'Trajet vers Tusayan · prévoir environ 4h30 avec une pause' },
+      { time: 'À l’arrivée', label: 'Mather Point puis Yavapai Point pour les premiers panoramas sur le Grand Canyon' },
+      { time: 'Milieu d’après-midi', label: 'Arrivée à l’hôtel, dépôt des bagages et baignade · demander l’accès à la piscine si la chambre n’est pas encore prête' },
+      { time: 'Avant 17h', label: 'Courses au Tusayan General Store pour préparer le pique-nique' },
+      { time: 'Fin d’après-midi → coucher du soleil', label: 'Route panoramique vers Navajo Point, puis pique-nique face au canyon et au Colorado' }
+    ],
+    info: [
+      {
+        text: 'Coucher du soleil le 25/09/2026 à 18h20, heure locale. Arriver à Navajo Point vers 17h30-17h45.',
+        sourceLabel: 'National Park Service',
+        sourceUrl: 'https://www.nps.gov/grca/planyourvisit/sunrise_set_moon.htm'
+      },
+      'Prendre une veste : les températures baissent rapidement après le coucher du soleil.'
     ],
     highlights: [
       'Mather Point',
-      'Rim Trail',
       'Yavapai Point',
-      'Coucher de soleil à Hopi Point ou Mohave Point'
+      'Navajo Point au coucher du soleil',
+      'Piscine à l’hôtel'
     ],
     hotel: {
       name: 'Holiday Inn Resort The Squire at Grand Canyon by IHG',
@@ -371,18 +379,6 @@
           mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Tropicana+Laughlin+Caesars+Rewards+Destination+2121+Casino+Drive+Laughlin+NV'
         },
         {
-          label: 'Holiday Inn Resort The Squire at Grand Canyon',
-          lat: 35.9693408,
-          lng: -112.1291202,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Holiday+Inn+Resort+The+Squire+at+Grand+Canyon+74+Highway+64+Tusayan+AZ+86023'
-        },
-        {
-          label: 'Grand Canyon Visitor Center',
-          lat: 36.0584,
-          lng: -112.1077,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Grand+Canyon+Visitor+Center+South+Rim'
-        },
-        {
           label: 'Mather Point',
           lat: 36.0613,
           lng: -112.1071,
@@ -395,19 +391,25 @@
           mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Yavapai+Point+Grand+Canyon'
         },
         {
-          label: 'Hopi Point',
-          lat: 36.0760938,
-          lng: -112.1546145,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Hopi+Point+Grand+Canyon'
+          label: 'Holiday Inn Resort The Squire at Grand Canyon',
+          lat: 35.9693408,
+          lng: -112.1291202,
+          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Holiday+Inn+Resort+The+Squire+at+Grand+Canyon+74+Highway+64+Tusayan+AZ+86023'
         },
         {
-          label: 'Mohave Point',
-          lat: 36.0757,
-          lng: -112.1707,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Mohave+Point+Grand+Canyon'
+          label: 'Tusayan General Store',
+          lat: 35.9755187,
+          lng: -112.1247,
+          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Tusayan+General+Store+577+AZ-64+Tusayan+AZ+86023'
+        },
+        {
+          label: 'Navajo Point',
+          lat: 36.03851,
+          lng: -111.83738,
+          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Navajo+Point+Grand+Canyon'
         }
       ],
-      directionsUrl: 'https://www.google.com/maps/dir/?api=1&origin=Tropicana+Laughlin+2121+Casino+Drive+Laughlin+NV&destination=Holiday+Inn+Resort+The+Squire+at+Grand+Canyon+74+Highway+64+Tusayan+AZ+86023&travelmode=driving'
+      directionsUrl: 'https://www.google.com/maps/dir/?api=1&origin=Tropicana+Laughlin+2121+Casino+Drive+Laughlin+NV&destination=Navajo+Point+Grand+Canyon&travelmode=driving&waypoints=Mather+Point+Grand+Canyon%7CYavapai+Point+Grand+Canyon%7CHoliday+Inn+Resort+The+Squire+at+Grand+Canyon%7CTusayan+General+Store+577+AZ-64'
     },
     links: [
       {
@@ -423,109 +425,7 @@
   {
     date: '26/09/2026',
     title: 'Jour 7',
-    route: 'Grand Canyon South Rim',
-    itinerary: [
-      { time: 'Lever du soleil · option', label: 'Mather Point ou Yavapai Point pour les premières lumières' },
-      { time: 'Matin', label: 'Navette orange jusqu’à South Kaibab Trailhead puis randonnée aller-retour vers Ooh Aah Point' },
-      { time: 'Randonnée', label: 'Environ 3 km aller-retour · descente facile, remontée plus exigeante · prévoir eau et chaussures adaptées' },
-      { time: 'Fin de matinée', label: 'Grand Canyon Visitor Center si la visite n’a pas été faite la veille' },
-      { time: 'Après-midi', label: 'Navette rouge sur Hermit Road avec arrêts à Trailview Overlook, Hopi Point et Mohave Point' },
-      { time: 'Fin de parcours', label: 'Pima Point puis Hermits Rest, avec quelques portions de West Rim Trail selon l’envie' }
-    ],
-    highlights: [
-      'Ooh Aah Point',
-      'South Kaibab Trail',
-      'Hermit Road',
-      'Hopi Point',
-      'Mohave Point',
-      'Hermits Rest'
-    ],
-    map: {
-      title: 'Jour 7 - Grand Canyon South Rim',
-      center: { lat: 36.065, lng: -112.14 },
-      zoom: 12,
-      trails: [
-        {
-          label: 'South Kaibab Trail vers Ooh Aah Point',
-          coordinates: [
-            { lat: 36.05292, lng: -112.08387 },
-            { lat: 36.0542, lng: -112.0841 },
-            { lat: 36.0556, lng: -112.0847 },
-            { lat: 36.0571, lng: -112.0855 },
-            { lat: 36.0587, lng: -112.0862 },
-            { lat: 36.0601, lng: -112.0868 },
-            { lat: 36.06156, lng: -112.087094 }
-          ]
-        }
-      ],
-      stops: [
-        {
-          label: 'Holiday Inn Resort The Squire',
-          lat: 35.9693408,
-          lng: -112.1291202,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Holiday+Inn+Resort+The+Squire+at+Grand+Canyon+74+Highway+64+Tusayan+AZ+86023'
-        },
-        {
-          label: 'Grand Canyon Visitor Center',
-          lat: 36.0584,
-          lng: -112.1077,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Grand+Canyon+Visitor+Center+South+Rim'
-        },
-        {
-          label: 'Mather Point',
-          lat: 36.0613,
-          lng: -112.1071,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Mather+Point+Grand+Canyon'
-        },
-        {
-          label: 'South Kaibab Trailhead',
-          lat: 36.05292,
-          lng: -112.08387,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=South+Kaibab+Trailhead+Grand+Canyon'
-        },
-        {
-          label: 'Ooh Aah Point',
-          lat: 36.06156,
-          lng: -112.087094,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Ooh+Aah+Point+Grand+Canyon'
-        },
-        {
-          label: 'Bright Angel Trailhead / navette rouge',
-          lat: 36.0575,
-          lng: -112.1437,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Bright+Angel+Trailhead+Grand+Canyon'
-        },
-        {
-          label: 'Hopi Point',
-          lat: 36.0760938,
-          lng: -112.1546145,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Hopi+Point+Grand+Canyon'
-        },
-        {
-          label: 'Mohave Point',
-          lat: 36.0757,
-          lng: -112.1707,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Mohave+Point+Grand+Canyon'
-        },
-        {
-          label: 'Hermits Rest',
-          lat: 36.064,
-          lng: -112.2115,
-          mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Hermits+Rest+Grand+Canyon'
-        }
-      ],
-      directionsUrl: 'https://www.google.com/maps/dir/?api=1&origin=Holiday+Inn+Resort+The+Squire+at+Grand+Canyon+74+Highway+64+Tusayan+AZ+86023&destination=Grand+Canyon+Visitor+Center&travelmode=driving'
-    },
-    links: [
-      {
-        label: 'Guide complet de Grand Canyon National Park',
-        url: 'https://www.roadtrippin.fr/arizona/grand-canyon/grand-canyon.php'
-      },
-      {
-        label: 'Grand Canyon South Rim : points de vue, navettes et randonnées',
-        url: 'https://www.roadtrippin.fr/arizona/grand-canyon/grand-canyon-south-rim.php'
-      }
-    ]
+    route: 'Grand Canyon AZ'
   },
   {
     date: '27/09/2026',

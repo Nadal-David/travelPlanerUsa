@@ -157,6 +157,37 @@ const renderItinerary = (itinerary = []) => itinerary.length ? `
   </div>
 ` : '';
 
+const renderDayInfo = (items = []) => items.length ? `
+  <aside class="day-info-card mt-3 flex items-start gap-3 rounded-xl border px-4 py-3">
+    <span class="day-info-icon inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-black leading-none" aria-hidden="true">i</span>
+    <div class="min-w-0">
+      <p class="day-info-title text-[11px] font-black uppercase tracking-[0.22em]">&Agrave; savoir</p>
+      <ul class="mt-2 list-disc space-y-2 pl-5 marker:text-amber-300">
+        ${items.map((item) => {
+          const info = typeof item === 'string' ? { text: item } : item;
+          return `
+            <li class="pl-1">
+              <div class="min-w-0">
+                <p class="day-info-text text-sm font-semibold leading-5">${escapeHtml(info.text)}</p>
+              ${info.sourceUrl ? `
+                <a
+                  class="mt-1 inline-flex text-xs font-bold text-amber-200 underline decoration-amber-200/50 underline-offset-4 transition hover:text-amber-100"
+                  href="${escapeHtml(info.sourceUrl)}"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Source : ${escapeHtml(info.sourceLabel || 'Site officiel')}
+                </a>
+              ` : ''}
+              </div>
+            </li>
+          `;
+        }).join('')}
+      </ul>
+    </div>
+  </aside>
+` : '';
+
 const renderMapPanel = (map, index) => map ? `
   <div class="mt-4 overflow-hidden rounded-xl border border-sky-700/30 bg-slate-900">
     <div class="border-b border-sky-700/30 px-4 py-3">
@@ -465,6 +496,7 @@ const renderDayCard = (day, index) => `
     ${renderTransport(day.transport)}
     ${renderHighlights(day.highlights)}
     ${renderItinerary(day.itinerary)}
+    ${renderDayInfo(day.info)}
     ${renderMapPanel(day.map, index)}
     ${renderLinks(day.links)}
   </article>
