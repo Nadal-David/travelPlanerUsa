@@ -9,11 +9,57 @@
     <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
     <link rel="mask-icon" href="./assets/favicon.svg" color="#38bdf8" />
     <link rel="stylesheet" href="./assets/vendor/leaflet.css" />
-    <link rel="stylesheet" href="./assets/styles.css?v=20260623-6" />
+    <link rel="stylesheet" href="./assets/styles.css?v=20260624-1" />
     <script src="./assets/vendor/leaflet.js" defer></script>
-    <script src="./assets/data.js?v=20260623-6" defer></script>
-    <script src="./assets/routes.js?v=20260623-6" defer></script>
-    <script src="./assets/app.js?v=20260623-6" defer></script>
+
+    <!-- Offline trip data: registry, one editable file per day, then shared references. -->
+    <script src="./assets/js/data/namespace.js" defer></script>
+    <script src="./assets/js/data/days/day-01.js" defer></script>
+    <script src="./assets/js/data/days/day-02.js" defer></script>
+    <script src="./assets/js/data/days/day-03.js" defer></script>
+    <script src="./assets/js/data/days/day-04.js" defer></script>
+    <script src="./assets/js/data/days/day-05.js" defer></script>
+    <script src="./assets/js/data/days/day-06.js" defer></script>
+    <script src="./assets/js/data/days/day-07.js" defer></script>
+    <script src="./assets/js/data/days/day-08.js" defer></script>
+    <script src="./assets/js/data/days/day-09.js" defer></script>
+    <script src="./assets/js/data/days/day-10.js" defer></script>
+    <script src="./assets/js/data/days/day-11.js" defer></script>
+    <script src="./assets/js/data/days/day-12.js" defer></script>
+    <script src="./assets/js/data/days/day-13.js" defer></script>
+    <script src="./assets/js/data/days/day-14.js" defer></script>
+    <script src="./assets/js/data/days/day-15.js" defer></script>
+    <script src="./assets/js/data/days/day-16.js" defer></script>
+    <script src="./assets/js/data/days/day-17.js" defer></script>
+    <script src="./assets/js/data/days/day-18.js" defer></script>
+    <script src="./assets/js/data/days/day-19.js" defer></script>
+    <script src="./assets/js/data/reference.js" defer></script>
+    <script src="./assets/js/data/index.js" defer></script>
+
+    <!-- Generated local route geometry. No network is required to display it. -->
+    <script src="./assets/js/routes/namespace.js" defer></script>
+    <script src="./assets/js/routes/day-1.js" defer></script>
+    <script src="./assets/js/routes/day-2.js" defer></script>
+    <script src="./assets/js/routes/day-3.js" defer></script>
+    <script src="./assets/js/routes/day-4.js" defer></script>
+    <script src="./assets/js/routes/day-5.js" defer></script>
+    <script src="./assets/js/routes/day-6.js" defer></script>
+    <script src="./assets/js/routes/day-7.js" defer></script>
+    <script src="./assets/js/routes/overview.js" defer></script>
+    <script src="./assets/js/routes/index.js" defer></script>
+
+    <!-- Application code, ordered by dependency for direct file:// compatibility. -->
+    <script src="./assets/js/app/core/dom.js" defer></script>
+    <script src="./assets/js/app/core/utils.js" defer></script>
+    <script src="./assets/js/app/ui/day-sections.js" defer></script>
+    <script src="./assets/js/app/ui/overview.js" defer></script>
+    <script src="./assets/js/app/ui/day-card.js" defer></script>
+    <script src="./assets/js/app/maps/day-maps.js" defer></script>
+    <script src="./assets/js/app/maps/overview-map.js" defer></script>
+    <script src="./assets/js/app/ui/info-pages.js" defer></script>
+    <script src="./assets/js/app/ui/checklists.js" defer></script>
+    <script src="./assets/js/app/ui/navigation.js" defer></script>
+    <script src="./assets/js/app/core/bootstrap.js" defer></script>
   </head>
   <body class="bg-slate-950 font-sans text-slate-100 antialiased">
     <main class="mx-auto min-h-screen max-w-4xl px-4 py-4 pb-28 sm:px-5 sm:pb-28 lg:px-0">

@@ -1,0 +1,36 @@
+// DOM references and mutable application state.
+const daysContainer = document.querySelector('#days');
+const navTabs = document.querySelector('#nav-tabs');
+const daysCount = document.querySelector('#days-count');
+const appView = document.querySelector('#app-view');
+const overviewView = document.querySelector('#overview-view');
+const estaView = document.querySelector('#esta-view');
+const esimView = document.querySelector('#esim-view');
+const parksView = document.querySelector('#parks-view');
+const todoView = document.querySelector('#todo-view');
+const dayPickerButton = document.querySelector('#day-picker-button');
+const dayPickerLabel = document.querySelector('#day-picker-label');
+const dayPickerMenu = document.querySelector('#day-picker-menu');
+const dayPickerWrap = document.querySelector('#day-picker-wrap');
+const dayPrev = document.querySelector('#day-prev');
+const dayNext = document.querySelector('#day-next');
+const dayCounter = document.querySelector('#day-counter');
+const travelerContainer = document.querySelector('#traveler-container');
+const esimContainer = document.querySelector('#esim-container');
+const parksContainer = document.querySelector('#parks-container');
+const prepContainer = document.querySelector('#prep-container');
+const davidContainer = document.querySelector('#david-container');
+const emelineContainer = document.querySelector('#emeline-container');
+const bothContainer = document.querySelector('#both-container');
+const metaCities = document.querySelector('#meta-cities');
+const metaFlights = document.querySelector('#meta-flights');
+const overviewContainer = document.querySelector('#overview-container');
+let navMoreButton = null;
+let navMoreMenu = null;
+
+const storageKey = 'travel-planner-usa-checklist-v1';
+const selectedTabKey = 'travel-planner-usa-tab-v1';
+const storedChecks = JSON.parse(localStorage.getItem(storageKey) || '{}');
+let activeDayIndex = 0;
+const dayMaps = new Map();
+let overviewMapState = null;

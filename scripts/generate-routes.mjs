@@ -1,4 +1,5 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { simplifyCoordinates } from './route-utils.mjs';
 
 const routeRequests = {
   'day-1': [
@@ -47,6 +48,14 @@ const routeRequests = {
     [-112.1247, 35.9755187],
     [-111.83738, 36.03851]
   ],
+  'day-7': [
+    [-112.1291202, 35.9693408],
+    [-112.1071, 36.0613],
+    [-112.1093, 36.0591],
+    [-112.1427, 36.0575],
+    [-112.1291202, 35.9693408],
+    [-111.9877, 35.9989]
+  ],
   overview: [
     [-118.2437, 34.0522],
     [-114.573, 35.1678],
@@ -61,9 +70,14 @@ const routeRequests = {
   ]
 };
 
+const requestedIds = new Set(process.argv.slice(2));
+const requests = Object.entries(routeRequests).filter(([id]) => !requestedIds.size || requestedIds.has(id));
+if (requestedIds.size && requests.length !== requestedIds.size) {
+  throw new Error(`Unknown route id. Available ids: ${Object.keys(routeRequests).join(', ')}`);
+}
 const features = [];
 
-for (const [id, coordinates] of Object.entries(routeRequests)) {
+for (const [id, coordinates] of requests) {
   const path = coordinates.map(([lng, lat]) => `${lng},${lat}`).join(';');
   const url = `https://router.project-osrm.org/route/v1/driving/${path}?overview=full&geometries=geojson&steps=false`;
   const response = await fetch(url, {
@@ -84,21 +98,31 @@ for (const [id, coordinates] of Object.entries(routeRequests)) {
       durationSeconds: Math.round(route.duration),
       generatedFrom: 'OSRM / OpenStreetMap'
     },
-    geometry: route.geometry
+    geometry: {
+      ...route.geometry,
+      coordinates: simplifyCoordinates(route.geometry.coordinates)
+    }
   });
 }
 
-const collection = { type: 'FeatureCollection', features };
-
-await mkdir(new URL('../assets/routes/', import.meta.url), { recursive: true });
+const outputDirectory = new URL('../assets/js/routes/', import.meta.url);
+if (!requestedIds.size) await rm(outputDirectory, { recursive: true, force: true });
+await mkdir(outputDirectory, { recursive: true });
 await writeFile(
-  new URL('../assets/routes/roadbook-routes.geojson', import.meta.url),
-  `${JSON.stringify(collection, null, 2)}\n`,
+  new URL('namespace.js', outputDirectory),
+  '// Shared offline route registry.\nwindow.TravelPlannerRoutes = window.TravelPlannerRoutes || { features: [] };\n',
   'utf8'
 );
+for (const feature of features) {
+  await writeFile(
+    new URL(`${feature.properties.id}.js`, outputDirectory),
+    `// Generated routing geometry stored locally for offline display.\nwindow.TravelPlannerRoutes.features.push(${JSON.stringify(feature)});\n`,
+    'utf8'
+  );
+}
 await writeFile(
-  new URL('../assets/routes.js', import.meta.url),
-  `// Generated routing geometry stored locally for offline display.\nconst offlineRouteGeoJson = ${JSON.stringify(collection)};\n`,
+  new URL('index.js', outputDirectory),
+  "// Compatibility collection consumed by the map renderer.\nconst offlineRouteGeoJson = { type: 'FeatureCollection', features: window.TravelPlannerRoutes.features };\n",
   'utf8'
 );
 
