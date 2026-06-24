@@ -2,7 +2,7 @@
 const renderVisit = (visit) => visit ? `
   <div class="mt-4 overflow-hidden rounded-xl border border-emerald-800/40 bg-slate-900">
     <div class="border-b border-emerald-800/40 px-4 py-3">
-      <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-200">Visite réservée</p>
+      <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-emerald-200">${escapeHtml(visit.eyebrow || 'Excursion prévue')}</p>
       <h3 class="mt-1 text-lg font-bold text-white">${escapeHtml(visit.title)}</h3>
     </div>
     <div class="grid gap-2.5 p-3 sm:grid-cols-2">
@@ -19,6 +19,16 @@ const renderVisit = (visit) => visit ? `
         <p class="mt-1 text-sm font-semibold text-white">${escapeHtml(visit.details)}</p>
         <p class="mt-2 text-sm text-slate-300">${escapeHtml(visit.provider)}</p>
         <p class="mt-1 text-sm text-slate-300">${escapeHtml(visit.address)}</p>
+        ${visit.bookingUrl ? `
+          <a
+            class="mt-3 ${mapActionButtonClass}"
+            href="${escapeHtml(visit.bookingUrl)}"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ${escapeHtml(visit.bookingLabel || 'Voir la réservation')}
+          </a>
+        ` : ''}
       </div>
     </div>
   </div>

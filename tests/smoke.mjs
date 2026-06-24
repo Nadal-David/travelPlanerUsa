@@ -67,11 +67,11 @@ loadHandlers.forEach((handler) => handler());
 if (context.TravelPlannerData.days.length !== 19) {
   throw new Error(`Expected 19 days, found ${context.TravelPlannerData.days.length}`);
 }
-if (context.TravelPlannerRoutes.features.length !== 8) {
-  throw new Error(`Expected 8 routes, found ${context.TravelPlannerRoutes.features.length}`);
+if (context.TravelPlannerRoutes.features.length !== 9) {
+  throw new Error(`Expected 9 routes, found ${context.TravelPlannerRoutes.features.length}`);
 }
 if (!getElement('#days').innerHTML.includes('Jour 1')) {
   throw new Error('The day cards were not rendered.');
 }
 
-console.log('Smoke test passed: 19 days, 8 offline routes, application bootstrapped.');
+console.log('Smoke test passed: 19 days, 9 offline routes, application bootstrapped.');
